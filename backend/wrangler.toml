@@ -1,0 +1,25 @@
+name = "bakpia-stok-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[env.production]
+name = "bakpia-stok-api"
+
+[env.development]
+name = "bakpia-stok-api-dev"
+
+# Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "bakpia-stok-db"
+database_id = "<DATABASE_ID_DARI_WRANGLER_D1_CREATE>"
+
+# Environment variables
+[vars]
+JWT_SECRET = "<JWT_SECRET_YANG_AMAN>"
+ENVIRONMENT = "development"
+
+# CORS settings
+[env.production.vars]
+ENVIRONMENT = "production"
+
