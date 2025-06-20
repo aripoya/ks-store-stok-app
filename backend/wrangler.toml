@@ -12,11 +12,11 @@ name = "bakpia-stok-api-dev"
 [[d1_databases]]
 binding = "DB"
 database_name = "bakpia-stok-db"
-database_id = "<DATABASE_ID_DARI_WRANGLER_D1_CREATE>"
+database_id = "4c9ef6a9-282f-4e37-b0ba-3fec5e03a1c6"
 
 # Environment variables
 [vars]
-JWT_SECRET = "<JWT_SECRET_YANG_AMAN>"
+JWT_SECRET = "bc56dc797fef04a50343b4a6bc75605e50c7e0eb2cde0b60d80b32bd088cde39ecab6af0486cc24e3ae22492b6f77e62e3401ec815f7d0ceaf18e1490c664594"
 ENVIRONMENT = "development"
 
 # CORS settings
