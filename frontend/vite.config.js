@@ -11,4 +11,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Add polyfill for global which is needed for some modules
+  define: {
+    global: 'window',
+  },
 })

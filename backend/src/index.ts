@@ -3,13 +3,21 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
 
+// Import migrations
+import { runMigrations } from './db/run-migrations'
+
 // Import routes
 import authRoutes from './routes/auth'
+import categoriesRoutes from './routes/categories'
 import productRoutes from './routes/products'
 import stockRoutes from './routes/stock'
 import transactionRoutes from './routes/transactions'
 import userRoutes from './routes/users'
 import reportRoutes from './routes/reports'
+
+// We don't need a module-level variable to track migrations anymore
+// The migration runner itself will track which migrations have been applied
+// by checking the migrations table in the database
 
 // Types for Cloudflare Workers environment
 type Bindings = {
@@ -45,6 +53,7 @@ app.get('/health', (c) => {
 
 // API Routes
 app.route('/api/auth', authRoutes)
+app.route('/api/categories', categoriesRoutes)
 app.route('/api/products', productRoutes)
 app.route('/api/stock', stockRoutes)
 app.route('/api/transactions', transactionRoutes)
@@ -63,6 +72,28 @@ app.onError((err, c) => {
     error: 'Internal Server Error',
     message: c.env.ENVIRONMENT === 'development' ? err.message : 'Something went wrong'
   }, 500)
+})
+
+// Run database migrations during app startup
+app.use('*', async (c, next) => {
+  const { req, env } = c
+  
+  // Always check for and run pending migrations on each app startup
+  // The migration runner will track which migrations have been executed
+  // in the migrations table and only run pending ones
+  if (env.DB) {
+    try {
+      console.log('Checking for pending database migrations...')
+      await runMigrations(env.DB)
+      console.log('Migration check completed successfully')
+    } catch (error) {
+      console.error('Migration check failed:', error)
+      // Don't block the application if migrations fail
+      // just log the error and continue
+    }
+  }
+  
+  return next()
 })
 
 export default app

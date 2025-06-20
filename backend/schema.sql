@@ -116,10 +116,10 @@ CREATE INDEX IF NOT EXISTS idx_stock_movements_date ON stock_movements(movement_
 
 -- Insert default categories
 INSERT OR IGNORE INTO categories (id, name, description) VALUES 
-(1, 'Bakpia Original', 'Bakpia dengan rasa original khas Yogyakarta'),
+(1, 'Bakpia Klasik', 'Bakpia dengan rasa klasik khas Yogyakarta'),
 (2, 'Bakpia Premium', 'Bakpia dengan bahan premium dan rasa istimewa'),
 (3, 'Bakpia Spesial', 'Bakpia dengan varian rasa spesial'),
-(4, 'Paket Gift', 'Paket bakpia untuk hadiah dan oleh-oleh');
+(4, 'Paket Oleh-oleh', 'Paket bakpia untuk oleh-oleh dan buah tangan');
 
 -- Insert default admin user (password: admin123)
 INSERT OR IGNORE INTO users (id, username, password_hash, full_name, role, is_active) VALUES 

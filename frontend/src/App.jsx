@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Layout from './components/layout/Layout'
 import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
+import Categories from './pages/Categories'
 import Stock from './pages/Stock'
 import Login from './pages/Login'
 import './App.css'
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="products" element={<Products />} />
+          <Route path="categories" element={<Categories />} />
           <Route path="stock" element={<Stock />} />
           <Route path="pos" element={<div className="p-6"><h1 className="text-2xl font-bold">Sistem Kasir</h1><p className="text-muted-foreground">Coming soon...</p></div>} />
           <Route path="transactions" element={<div className="p-6"><h1 className="text-2xl font-bold">Transaksi</h1><p className="text-muted-foreground">Coming soon...</p></div>} />

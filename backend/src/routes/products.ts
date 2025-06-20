@@ -8,8 +8,17 @@ type Bindings = {
 
 const products = new Hono<{ Bindings: Bindings }>()
 
-// Middleware for authentication
-products.use('*', jwt({ secret: async (c) => c.env.JWT_SECRET }))
+// Only apply authentication middleware to non-GET requests to allow public read access
+// Use a regex pattern that matches POST, PUT, DELETE, etc. but not GET
+products.use('/*', async (c, next) => {
+  // Skip authentication for GET requests
+  if (c.req.method === 'GET') {
+    return await next()
+  }
+  
+  // Apply authentication middleware for non-GET requests
+  return jwt({ secret: c.env.JWT_SECRET })(c, next)
+})
 
 // Get all categories
 products.get('/categories', async (c) => {

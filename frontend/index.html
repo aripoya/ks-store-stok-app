@@ -5,6 +5,11 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bakpia Kurniasari - Sistem Manajemen Stok</title>
+    <!-- Global object polyfill for Node.js compatibility -->
+    <script>
+      window.global = window;
+      window.process = window.process || { env: {} };
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,9 +1,22 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Package, TrendingUp, AlertTriangle, Users } from 'lucide-react'
+import { useCategories } from '@/hooks/useCategories'
+import { useEffect, useState } from 'react'
+import { productsAPI, stockAPI } from '@/services/api'
 
 export default function Dashboard() {
-  // Mock data - will be replaced with real API calls
-  const stats = [
+  // Get category data from our hook
+  const { categories, loading: categoriesLoading } = useCategories();
+  
+  // State for API data
+  const [products, setProducts] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [lowStock, setLowStock] = useState([]);
+  const [stats, setStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  // Initialize stats with default values
+  useEffect(() => {
+    setStats([
     {
       title: 'Total Produk',
       value: '24',
@@ -32,19 +45,71 @@ export default function Dashboard() {
       icon: Users,
       color: 'text-purple-600'
     }
-  ]
+    ]);
+  }, []);
 
+  // We'll replace these with API data when available
+  // For now, use updated category names in our mock data
   const recentTransactions = [
-    { id: 'TRX-001', product: 'Bakpia Pathok Original', amount: 'Rp 75,000', time: '10:30' },
+    { id: 'TRX-001', product: 'Bakpia Pathok Klasik', amount: 'Rp 75,000', time: '10:30' },
     { id: 'TRX-002', product: 'Bakpia Premium Keju', amount: 'Rp 105,000', time: '10:15' },
-    { id: 'TRX-003', product: 'Paket Gift Box', amount: 'Rp 150,000', time: '09:45' },
+    { id: 'TRX-003', product: 'Paket Oleh-oleh Box', amount: 'Rp 150,000', time: '09:45' },
   ]
 
-  const lowStockProducts = [
-    { name: 'Bakpia Pathok Original', stock: 5, minStock: 10 },
+  // We'll replace these with API data when available
+  // For now, use updated category names in our mock data
+  const initialLowStockProducts = [
+    { name: 'Bakpia Pathok Klasik', stock: 5, minStock: 10 },
     { name: 'Bakpia Premium Durian', stock: 2, minStock: 5 },
     { name: 'Bakpia Spesial Teh Hijau', stock: 3, minStock: 5 },
   ]
+  
+  // Fetch real data from the API
+  useEffect(() => {
+    async function fetchDashboardData() {
+      setLoading(true);
+      try {
+        // Fetch products and stock data
+        const [productsData, stockData] = await Promise.all([
+          productsAPI.getAll().catch(() => []),
+          stockAPI.getLowStock().catch(() => []),
+        ]);
+        
+        setProducts(productsData);
+        
+        // If we get real low stock data, use it
+        if (stockData && stockData.length > 0) {
+          setLowStock(stockData);
+        } else {
+          // Otherwise use our initial mock data
+          setLowStock(initialLowStockProducts);
+        }
+        
+        // Update stats with real numbers if available
+        if (productsData && productsData.length > 0) {
+          setStats(prev => {
+            const updatedStats = [...prev];
+            // Update product count
+            updatedStats[0] = {
+              ...updatedStats[0],
+              value: productsData.length.toString()
+            };
+            return updatedStats;
+          });
+        }
+        
+        // We'll keep the mock transaction data for now
+        // as we don't have a transactions API endpoint yet
+        
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchDashboardData();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -59,7 +124,7 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.title}>
+          <Card key={stat.title} className="shadow-sm hover:shadow transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {stat.title}
@@ -87,8 +152,10 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between">
+              {loading ? (
+              <div className="py-4 text-center text-muted-foreground">Memuat data...</div>
+            ) : recentTransactions.length > 0 ? recentTransactions.map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between hover:bg-muted/50 p-2 rounded-md">
                   <div>
                     <p className="text-sm font-medium">{transaction.product}</p>
                     <p className="text-xs text-muted-foreground">{transaction.id}</p>
@@ -98,7 +165,9 @@ export default function Dashboard() {
                     <p className="text-xs text-muted-foreground">{transaction.time}</p>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="py-4 text-center text-muted-foreground">Tidak ada transaksi terbaru</div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -116,8 +185,10 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {lowStockProducts.map((product) => (
-                <div key={product.name} className="flex items-center justify-between">
+              {loading ? (
+              <div className="py-4 text-center text-muted-foreground">Memuat data...</div>
+            ) : lowStock.length > 0 ? lowStock.map((product) => (
+                <div key={product.name} className="flex items-center justify-between hover:bg-muted/50 p-2 rounded-md">
                   <div>
                     <p className="text-sm font-medium">{product.name}</p>
                     <p className="text-xs text-muted-foreground">
@@ -130,7 +201,9 @@ export default function Dashboard() {
                     </span>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="py-4 text-center text-muted-foreground">Semua stok dalam jumlah aman</div>
+              )}
             </div>
           </CardContent>
         </Card>
