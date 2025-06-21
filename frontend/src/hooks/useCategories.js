@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 // Import categoriesAPI directly to avoid potential 'global' issues
 // import { categoriesAPI } from '../services/api';
 
-// With the Vite proxy configuration, we can use relative URLs instead of absolute URLs
-// This avoids CORS issues and makes development easier
-const API_BASE_URL = '';  // Empty base URL will use the current domain
+// Use the environment variable when available, otherwise use a relative path for local dev with proxy
+// This ensures our code works in both development and production environments
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 console.log('Using API base URL:', API_BASE_URL);
 
 /**

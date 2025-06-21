@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
-// With the Vite proxy configuration, we can use relative URLs instead of absolute URLs
-// This avoids CORS issues and makes development easier
-const API_BASE_URL = '';  // Empty base URL will use the current domain
+// Use the environment variable when available, otherwise use a relative path for local dev with proxy
+// This ensures our code works in both development and production environments
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 // Log API URL configuration
 console.log('Products hook environment variables:', {
