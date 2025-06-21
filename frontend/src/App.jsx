@@ -5,6 +5,9 @@ import Products from './pages/Products'
 import Categories from './pages/Categories'
 import Stock from './pages/Stock'
 import Login from './pages/Login'
+import TestPage from './pages/TestPage'
+import SimpleProducts from './pages/SimpleProducts'
+import DebugLog from './debug-log'
 import './App.css'
 
 function App() {
@@ -17,12 +20,16 @@ function App() {
 
   return (
     <Router>
+      {/* Add DebugLog component to help diagnose API connection issues */}
+      <DebugLog />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="categories" element={<Categories />} />
           <Route path="stock" element={<Stock />} />
+          <Route path="test" element={<TestPage />} />
+          <Route path="simple-products" element={<SimpleProducts />} />
           <Route path="pos" element={<div className="p-6"><h1 className="text-2xl font-bold">Sistem Kasir</h1><p className="text-muted-foreground">Coming soon...</p></div>} />
           <Route path="transactions" element={<div className="p-6"><h1 className="text-2xl font-bold">Transaksi</h1><p className="text-muted-foreground">Coming soon...</p></div>} />
           <Route path="users" element={<div className="p-6"><h1 className="text-2xl font-bold">Manajemen Pengguna</h1><p className="text-muted-foreground">Coming soon...</p></div>} />

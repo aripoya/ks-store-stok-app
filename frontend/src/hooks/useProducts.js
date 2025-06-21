@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 
-// API base URL from environment variables (with fallback)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// With the Vite proxy configuration, we can use relative URLs instead of absolute URLs
+// This avoids CORS issues and makes development easier
+const API_BASE_URL = '';  // Empty base URL will use the current domain
 
 // Log API URL configuration
 console.log('Products hook environment variables:', {
@@ -19,12 +20,16 @@ console.log('Products hook environment variables:', {
  * @returns {Object} Products data, loading state, error state, and pagination
  */
 export function useProducts({ 
-  page = 1, 
-  limit = 10, 
-  search = '', 
-  categoryId = null 
+  page: initialPage = 1, 
+  limit: initialLimit = 10, 
+  search: initialSearch = '', 
+  categoryId: initialCategoryId = null 
 } = {}) {
   const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(initialPage);
+  const [limit, setLimit] = useState(initialLimit);
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategoryId);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
@@ -34,90 +39,130 @@ export function useProducts({
     totalPages: 1
   });
 
+  // Fallback products data if API fails
+  const localProducts = [
+    { id: 1, name: 'Bakpia Klasik Kacang Hijau', category_id: 1, category_name: 'Bakpia Klasik', price: 45000, current_stock: 50 },
+    { id: 2, name: 'Bakpia Premium Coklat', category_id: 2, category_name: 'Bakpia Premium', price: 65000, current_stock: 25 },
+    { id: 3, name: 'Bakpia Spesial Keju', category_id: 3, category_name: 'Bakpia Spesial', price: 55000, current_stock: 35 },
+    { id: 4, name: 'Paket Oleh-oleh Box Kecil', category_id: 4, category_name: 'Paket Oleh-oleh', price: 85000, current_stock: 15 },
+  ];
+  
+  // Define state setters that reset page when params change
+  const setPageState = (newPage) => {
+    if (page !== newPage) {
+      setPage(newPage);
+    }
+  };
+  
+  const setLimitState = (newLimit) => {
+    if (limit !== newLimit) {
+      setPage(1); // Reset to page 1 when changing limit
+      setLimit(newLimit);
+    }
+  };
+  
+  const setSearchState = (newSearch) => {
+    if (searchTerm !== newSearch) {
+      setPage(1); // Reset to page 1 when changing search
+      setSearchTerm(newSearch);
+    }
+  };
+  
+  const setCategoryIdState = (newCategoryId) => {
+    if (selectedCategory !== newCategoryId) {
+      setPage(1); // Reset to page 1 when changing category
+      setSelectedCategory(newCategoryId);
+    }
+  };
+  
   useEffect(() => {
-    async function fetchProducts() {
+    // Fetch products when dependencies change
+    const fetchProducts = async () => {
       setLoading(true);
       setError(null);
       
       try {
-        // Build the query string
-        const params = new URLSearchParams();
-        params.append('page', page);
-        params.append('limit', limit);
+        // Build query parameters
+        const queryParams = new URLSearchParams();
+        if (selectedCategory) queryParams.append('category_id', selectedCategory);
+        if (searchTerm) queryParams.append('search', searchTerm);
+        if (page) queryParams.append('page', page);
+        if (limit) queryParams.append('limit', limit);
         
-        if (search) {
-          params.append('search', search);
-        }
+        const queryString = queryParams.toString();
+        const url = `${API_BASE_URL}/api/products${queryString ? `?${queryString}` : ''}`;
         
-        if (categoryId) {
-          params.append('category_id', categoryId);
-        }
+        console.log('Fetching products from:', url);
         
-        // Enhanced debugging - show all environment variables
-        console.log('Environment variables:', {
-          VITE_API_URL: import.meta.env.VITE_API_URL,
-          MODE: import.meta.env.MODE,
-          DEV: import.meta.env.DEV,
-        });
-        
-        // Direct fetch implementation with full URL logging
-        const fullUrl = `${API_BASE_URL}/api/products?${params.toString()}`;
-        console.log('Fetching from:', fullUrl);
-        
-        const response = await fetch(fullUrl);
+        const response = await fetch(url);
         console.log('Response status:', response.status);
         
         if (!response.ok) {
-          // Try to get response text for more detailed error info
-          const errorText = await response.text();
-          console.error('API Error response:', errorText);
-          throw new Error(`API Error: ${response.status}\nDetails: ${errorText}`);
+          throw new Error(`API Error: ${response.status}`);
         }
         
         const data = await response.json();
         console.log('Products data:', data);
         
-        // Ensure data is processed correctly
-        const productsList = data.products || [];
-        console.log('Products list:', productsList);
-        
-        setProducts(productsList);
-        setPagination(data.pagination || {
-          page,
-          limit,
-          total: productsList.length,
-          totalPages: 1
-        });
-        
-        // Log the state update
-        console.log('State updated with products:', productsList.length);
+        // Check if the response has the expected structure
+        if (data && Array.isArray(data.products)) {
+          console.log(`Received ${data.products.length} products`);
+          setProducts(data.products);
+          setPagination(data.pagination || {
+            page,
+            limit,
+            total: data.products.length,
+            totalPages: Math.ceil(data.products.length / limit)
+          });
+        } else if (Array.isArray(data)) {
+          // Fallback for array format
+          console.log(`Received ${data.length} products (array format)`);
+          setProducts(data);
+          setPagination({
+            page,
+            limit,
+            total: data.length,
+            totalPages: Math.ceil(data.length / limit)
+          });
+        } else {
+          console.error('Unexpected API response format:', data);
+          throw new Error('Invalid API response format');
+        }
       } catch (err) {
         console.error('Failed to fetch products:', err);
         setError(err.message || 'Failed to load products');
         
-        // Fallback hardcoded products for development
-        setProducts([
-          { id: 1, name: 'Bakpia Klasik Kacang Hijau', category_id: 1, category_name: 'Bakpia Klasik', price: 45000, current_stock: 50 },
-          { id: 2, name: 'Bakpia Premium Coklat', category_id: 2, category_name: 'Bakpia Premium', price: 65000, current_stock: 25 },
-          { id: 3, name: 'Bakpia Spesial Keju', category_id: 3, category_name: 'Bakpia Spesial', price: 55000, current_stock: 35 },
-          { id: 4, name: 'Paket Oleh-oleh Box Kecil', category_id: 4, category_name: 'Paket Oleh-oleh', price: 85000, current_stock: 15 },
-        ]);
+        // Fallback to local products
+        setProducts(localProducts);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchProducts();
-  }, [page, limit, search, categoryId]);
+  }, [page, limit, searchTerm, selectedCategory]);
+  
+  // Sync with external prop changes
+  useEffect(() => {
+    if (initialCategoryId !== selectedCategory) {
+      setSelectedCategory(initialCategoryId);
+    }
+  }, [initialCategoryId]);
+  
+  useEffect(() => {
+    if (initialSearch !== searchTerm) {
+      setSearchTerm(initialSearch);
+    }
+  }, [initialSearch]);
 
   return {
     products,
     loading,
     error,
     pagination,
-    setPage: (newPage) => page !== newPage && setProducts([]),
-    setLimit: (newLimit) => limit !== newLimit && setProducts([]),
-    setSearch: (newSearch) => search !== newSearch && setProducts([]),
-    setCategoryId: (newCategoryId) => categoryId !== newCategoryId && setProducts([])
+    setPage: setPageState,
+    setLimit: setLimitState,
+    setSearch: setSearchState,
+    setCategoryId: setCategoryIdState
   };
 }

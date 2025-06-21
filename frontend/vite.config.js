@@ -15,4 +15,15 @@ export default defineConfig({
   define: {
     global: 'window',
   },
+  // Add proxy for API requests to avoid CORS issues
+  server: {
+    proxy: {
+      // Proxy API requests to the backend server
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })

@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 // Import categoriesAPI directly to avoid potential 'global' issues
 // import { categoriesAPI } from '../services/api';
 
-// API base URL - Use localhost for development, production URL for deployment
-// Log the environment variable to debug
-console.log('Environment variables:', import.meta.env);
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// With the Vite proxy configuration, we can use relative URLs instead of absolute URLs
+// This avoids CORS issues and makes development easier
+const API_BASE_URL = '';  // Empty base URL will use the current domain
 console.log('Using API base URL:', API_BASE_URL);
 
 /**
