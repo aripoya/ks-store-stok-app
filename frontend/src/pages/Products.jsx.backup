@@ -1,0 +1,622 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { 
+  Package, 
+  Plus, 
+  Search, 
+  Loader2, 
+  Pencil, 
+  Trash, 
+  AlertCircle 
+} from 'lucide-react'
+import { useCategories } from '@/hooks/useCategories'
+import { useProducts } from '@/hooks/useProducts'
+import { useState, useEffect } from 'react'
+import NonBakpiaCategories from '@/components/products/NonBakpiaCategories'
+import { useToast } from '@/components/ui/use-toast'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+export default function Products() {
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // CRUD state variables
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [formError, setFormError] = useState(null);
+  const [formLoading, setFormLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  
+  // Toast notifications
+  const { toast } = useToast();
+  
+  // Use relative URLs for API calls to work with Vite proxy
+  
+  // Fetch products with the useProducts hook
+  const { 
+    products, 
+    loading: productsLoading, 
+    error: productsError,
+    pagination,
+    setPage,
+    setLimit,
+    refresh // Use the refresh function to reload data after CRUD operations
+  } = useProducts({ 
+    categoryId: selectedCategory,
+    search: searchTerm
+  });
+
+  // Debug output
+  console.log('Products component state:', {
+    selectedCategory,
+    searchTerm,
+    productsCount: products?.length,
+    isLoading: productsLoading,
+    error: productsError,
+    paginationInfo: pagination
+  });
+  
+  // Reset page to 1 when category or search changes
+  useEffect(() => {
+    console.log('Category or search changed, resetting to page 1');
+    if (setPage) {
+      setPage(1);
+    }
+  }, [selectedCategory, searchTerm, setPage]);
+  
+  // Create a new product
+  async function createProduct(formData) {
+    setFormLoading(true);
+    setFormError(null);
+    try {
+      const response = await fetch(`/api/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error: ${response.status}`);
+      }
+
+      toast({
+        title: "Sukses",
+        description: "Produk berhasil ditambahkan.",
+      });
+
+      // Refresh product list
+      refresh(); // Use the refresh function instead
+
+    } catch (err) {
+      console.error('Create product error:', err);
+      setFormError(err.message || 'Gagal menambahkan produk');
+      return false;
+    } finally {
+      setFormLoading(false);
+    }
+    return true;
+  }
+
+  // Update existing product
+  async function updateProduct(id, formData) {
+    setFormLoading(true);
+    setFormError(null);
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error: ${response.status}`);
+      }
+
+      toast({
+        title: "Sukses",
+        description: "Produk berhasil diperbarui.",
+      });
+
+      // Reset editing state
+      setEditingProduct(null);
+      
+      // Refresh product list
+      refresh(); // Use the refresh function instead
+
+    } catch (err) {
+      console.error('Update product error:', err);
+      setFormError(err.message || 'Gagal memperbarui produk');
+      return false;
+    } finally {
+      setFormLoading(false);
+    }
+    return true;
+  }
+
+  // Delete product
+  async function deleteProduct(id) {
+    setDeleteLoading(true);
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error: ${response.status}`);
+      }
+
+      toast({
+        title: "Sukses",
+        description: "Produk berhasil dihapus.",
+      });
+
+      // Refresh product list
+      refresh(); // Use the refresh function instead
+
+    } catch (err) {
+      console.error('Delete product error:', err);
+      toast({
+        variant: "destructive",
+        title: "Gagal menghapus produk",
+        description: err.message || "Terjadi kesalahan saat menghapus produk.",
+      });
+      return false;
+    } finally {
+      setDeleteLoading(false);
+      setProductToDelete(null);
+    }
+    return true;
+  }
+  
+  // Form handlers
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    
+    const data = {
+      name: formData.get('name'),
+      description: formData.get('description') || '',
+      price: parseFloat(formData.get('price')) || 0,
+      category_id: parseInt(formData.get('category_id')) || null,
+      current_stock: parseInt(formData.get('current_stock')) || 0,
+    };
+    
+    let success = false;
+    if (editingProduct) {
+      success = await updateProduct(editingProduct.id, data);
+    } else {
+      success = await createProduct(data);
+      if (success) {
+        // Reset form after successful submission
+        event.target.reset();
+      }
+    }
+    
+    return success;
+  };
+  
+  const handleEditClick = (product) => {
+    setEditingProduct(product);
+    setFormError(null);
+  };
+  
+  const handleCancelEdit = () => {
+    setEditingProduct(null);
+    setFormError(null);
+  };
+  
+  // Confirmation for product deletion
+  const confirmDelete = (product) => {
+    setProductToDelete(product);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground">Manajemen Produk</h1>
+        <p className="text-muted-foreground">
+          Kelola produk bakpia dan kategori
+        </p>
+      </div>
+
+      {/* Bakpia Categories */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Kategori Produk Bakpia</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {categoriesLoading ? (
+            <p className="text-muted-foreground">Memuat kategori...</p>
+          ) : categoriesError ? (
+            <div className="text-red-500">
+              <p>Error: {categoriesError}</p>
+              <p className="text-muted-foreground text-sm">Menggunakan data kategori lokal</p>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {/* Filter to show only Bakpia categories (ids 1-4) */}
+              {categories
+                .filter(category => category.id <= 4)
+                .map((category) => (
+                  <Badge 
+                    key={category.id} 
+                    variant={selectedCategory === category.id ? "default" : "outline"}
+                    className="text-sm py-1 px-3 cursor-pointer hover:bg-muted"
+                    onClick={() => setSelectedCategory(category.id === selectedCategory ? null : category.id)}
+                  >
+                    {category.name}
+                  </Badge>
+                ))
+              }
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Non-Bakpia Categories Tabs */}
+      {!categoriesLoading && !categoriesError && (
+        <NonBakpiaCategories 
+          categories={categories} 
+          onSelectCategory={(category) => setSelectedCategory(category.id === selectedCategory ? null : category.id)} 
+        />
+      )}
+
+      {/* Products */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Daftar Produk</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <input 
+                type="text"
+                placeholder="Cari produk..."
+                className="pl-8 h-8 rounded-md border border-input bg-background text-sm ring-offset-background"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="sm" className="h-8">
+                  <Plus className="mr-1 h-4 w-4" />
+                  Tambah Produk
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Tambah Produk Baru</DialogTitle>
+                  <DialogDescription>
+                    Tambahkan produk baru ke sistem
+                  </DialogDescription>
+                </DialogHeader>
+
+                <form onSubmit={handleSubmit}>
+                  {formError && (
+                    <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md flex items-center gap-2 mb-4">
+                      <AlertCircle size={16} />
+                      {formError}
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4 py-2">
+                    <div className="space-y-2">
+                      <label htmlFor="name" className="text-sm font-medium">Nama Produk</label>
+                      <Input 
+                        id="name" 
+                        name="name" 
+                        placeholder="Contoh: Bakpia Coklat Premium" 
+                        required 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="category_id" className="text-sm font-medium">Kategori</label>
+                      <Select name="category_id" required defaultValue="">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih kategori" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="price" className="text-sm font-medium">Harga (Rp)</label>
+                      <Input 
+                        id="price" 
+                        name="price" 
+                        type="number" 
+                        placeholder="0" 
+                        min="0" 
+                        required 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="current_stock" className="text-sm font-medium">Stok Awal</label>
+                      <Input 
+                        id="current_stock" 
+                        name="current_stock" 
+                        type="number" 
+                        placeholder="0" 
+                        min="0" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label htmlFor="description" className="text-sm font-medium">Deskripsi</label>
+                      <Textarea 
+                        id="description" 
+                        name="description" 
+                        placeholder="Deskripsi singkat produk"
+                      />
+                    </div>
+                  </div>
+
+                  <DialogFooter className="mt-4">
+                    <DialogClose asChild>
+                      <Button type="button" variant="outline">Batal</Button>
+                    </DialogClose>
+                    <Button type="submit" disabled={formLoading}>
+                      {formLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Simpan
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {selectedCategory ? (
+            <p className="flex items-center text-muted-foreground mb-4">
+              <Package className="mr-2 h-4 w-4" />
+              Menampilkan produk untuk kategori: {categories.find(c => c.id === selectedCategory)?.name || ''}              
+            </p>
+          ) : (
+            <p className="flex items-center text-muted-foreground mb-4">
+              <Package className="mr-2 h-4 w-4" />
+              {searchTerm ? `Hasil pencarian untuk: ${searchTerm}` : 'Semua produk'}
+            </p>
+          )}
+          
+          {productsLoading ? (
+            <p className="text-muted-foreground">Memuat produk...</p>
+          ) : productsError ? (
+            <div className="text-red-500">
+              <p>Error: {productsError}</p>
+              <p className="text-muted-foreground text-sm">Menggunakan data produk lokal</p>
+            </div>
+          ) : !products || products.length === 0 ? (
+            <div>
+              <p className="text-muted-foreground">Tidak ada produk yang ditemukan</p>
+              <p className="text-sm text-muted-foreground mt-2">Coba pilih kategori lain atau ubah kriteria pencarian</p>
+            </div>
+                              <DialogDescription>
+                                Ubah informasi produk
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <form onSubmit={handleSubmit}>
+                              {formError && (
+                                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md flex items-center gap-2 mb-4">
+                                  <AlertCircle size={16} />
+                                  {formError}
+                                </div>
+                              )}
+                              
+                              <div className="space-y-4 py-2">
+                                <div className="space-y-2">
+                                  <label htmlFor="edit-name" className="text-sm font-medium">Nama Produk</label>
+                                  <Input 
+                                    id="edit-name" 
+                                    name="name" 
+                                    defaultValue={editingProduct?.name}
+                                    required 
+                                  />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <label htmlFor="edit-category" className="text-sm font-medium">Kategori</label>
+                                  <Select 
+                                    name="category_id" 
+                                    defaultValue={editingProduct?.category_id?.toString()}
+                                    required
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Pilih kategori" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {categories.map((category) => (
+                                        <SelectItem key={category.id} value={category.id.toString()}>
+                                          {category.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <label htmlFor="edit-price" className="text-sm font-medium">Harga (Rp)</label>
+                                  <Input 
+                                    id="edit-price" 
+                                    name="price" 
+                                    type="number" 
+                                    defaultValue={editingProduct?.price}
+                                    min="0" 
+                                    required 
+                                  />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <label htmlFor="edit-stock" className="text-sm font-medium">Stok</label>
+                                  <Input 
+                                    id="edit-stock" 
+                                    name="current_stock" 
+                                    type="number" 
+                                    defaultValue={editingProduct?.current_stock || 0}
+                                    min="0" 
+                                  />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <label htmlFor="edit-description" className="text-sm font-medium">Deskripsi</label>
+                                  <Textarea 
+                                    id="edit-description" 
+                                    name="description" 
+                                    defaultValue={editingProduct?.description}
+                                    placeholder="Deskripsi singkat produk"
+                                  />
+                                </div>
+                              </div>
+
+                              <DialogFooter className="mt-4">
+                                <DialogClose asChild>
+                                  <Button 
+                                    type="button" 
+                                    variant="outline"
+                                    onClick={handleCancelEdit}  
+                                  >
+                                    Batal
+                                  </Button>
+                                </DialogClose>
+                                <Button type="submit" disabled={formLoading}>
+                                  {formLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                  Simpan
+                                </Button>
+                              </DialogFooter>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
+                        
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-7 w-7 p-0 text-destructive hover:text-destructive" 
+                              onClick={() => confirmDelete(product)}
+                            >
+                              <Trash size={14} />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Yakin ingin menghapus produk?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Produk "{productToDelete?.name}" akan dihapus permanen dari sistem.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Batal</AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                onClick={() => deleteProduct(productToDelete?.id)}
+                                disabled={deleteLoading}
+                              >
+                                {deleteLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Hapus
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">
+                      <Badge variant="outline" className="mr-2">{product.category_name}</Badge>
+                      <span>Rp {product.price?.toLocaleString() || 0}</span>
+                    </div>
+                    <div className="mt-2 text-sm">
+                      <span className={`${(product.current_stock || 0) > 20 ? 'text-green-600' : (product.current_stock || 0) > 5 ? 'text-amber-600' : 'text-red-600'}`}>
+                        Stok: {product.current_stock || 0}
+                      </span>
+                    </div>
+                    {product.description && (
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                        {product.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {pagination && pagination.totalPages > 0 && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Menampilkan {products.length} dari {pagination.total || products.length} produk
+                  </p>
+                  <div className="flex gap-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      disabled={pagination.page <= 1}
+                      onClick={() => setPage && setPage(pagination.page - 1)}
+                    >
+                      Sebelumnya
+                    </Button>
+                    <span className="px-2 py-1 text-sm">
+                      Halaman {pagination.page} dari {pagination.totalPages || 1}
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      disabled={!pagination.totalPages || pagination.page >= pagination.totalPages}
+                      onClick={() => setPage && setPage(pagination.page + 1)}
+                    >
+                      Berikutnya
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+

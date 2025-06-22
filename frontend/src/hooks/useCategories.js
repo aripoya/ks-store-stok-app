@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 // Use the environment variable when available, otherwise use a relative path for local dev with proxy
 // This ensures our code works in both development and production environments
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-console.log('Using API base URL:', API_BASE_URL);
+console.log('useCategories: API_BASE_URL =', API_BASE_URL);
 
 /**
  * A hook for fetching and managing category data
@@ -15,43 +15,57 @@ export const useCategories = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Fallback categories data
+  const fallbackCategories = [
+    { id: 1, name: 'Bakpia Klasik', description: 'Bakpia dengan rasa klasik khas Yogyakarta' },
+    { id: 2, name: 'Bakpia Premium', description: 'Bakpia dengan bahan premium dan rasa istimewa' },
+    { id: 3, name: 'Bakpia Spesial', description: 'Bakpia dengan varian rasa spesial' },
+    { id: 4, name: 'Paket Oleh-oleh', description: 'Bakpia untuk oleh-oleh dan buah tangan' },
+  ];
+
   // Fetch all categories directly (without using the API service)
   const fetchCategories = async () => {
+    console.log('useCategories: Starting fetchCategories...');
     setLoading(true);
     setError(null);
     
     try {
-      // Direct fetch implementation instead of using the API service
-      console.log('Fetching from:', `${API_BASE_URL}/api/categories`);
-      const response = await fetch(`${API_BASE_URL}/api/categories`);
-      console.log('Response status:', response.status);
+      // Use the API_BASE_URL for proper path construction
+      const url = `${API_BASE_URL}/api/categories`;
+      console.log('useCategories: Fetching from URL:', url);
+      const response = await fetch(url);
+      console.log('useCategories: Response received:', response.status, response.statusText);
       
       if (!response.ok) {
         throw new Error(`API Error: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('useCategories: API data received:', data);
       setCategories(data);
     } catch (err) {
-      console.error('Failed to fetch categories:', err);
+      console.error('useCategories: API failed, using fallback:', err);
       setError(err.message || 'Failed to load categories');
       
-      // Fallback to hardcoded categories in case of API error
-      setCategories([
-        { id: 1, name: 'Bakpia Klasik', description: 'Bakpia dengan rasa klasik khas Yogyakarta' },
-        { id: 2, name: 'Bakpia Premium', description: 'Bakpia dengan bahan premium dan rasa istimewa' },
-        { id: 3, name: 'Bakpia Spesial', description: 'Bakpia dengan varian rasa spesial' },
-        { id: 4, name: 'Paket Oleh-oleh', description: 'Bakpia untuk oleh-oleh dan buah tangan' },
-      ]);
+      // Set fallback categories when API fails
+      console.log('useCategories: Setting fallback categories:', fallbackCategories);
+      setCategories(fallbackCategories);
     } finally {
       setLoading(false);
+      console.log('useCategories: fetchCategories completed');
     }
   };
 
   // Load categories on component mount
   useEffect(() => {
+    console.log('useCategories: useEffect triggered, calling fetchCategories');
     fetchCategories();
   }, []);
+
+  // Debug current state
+  useEffect(() => {
+    console.log('useCategories: State update - categories:', categories, 'loading:', loading, 'error:', error);
+  }, [categories, loading, error]);
 
   return {
     categories,

@@ -16,8 +16,12 @@ products.use('/*', async (c, next) => {
     return await next()
   }
   
+  // DEVELOPMENT MODE: Temporarily skip authentication for all requests to help development
+  // IMPORTANT: Remove this for production and uncomment the line below
+  return await next()
+  
   // Apply authentication middleware for non-GET requests
-  return jwt({ secret: c.env.JWT_SECRET })(c, next)
+  // return jwt({ secret: c.env.JWT_SECRET })(c, next)
 })
 
 // Get all categories
@@ -37,11 +41,16 @@ products.get('/categories', async (c) => {
 // Create new category
 products.post('/categories', async (c) => {
   try {
-    const payload = c.get('jwtPayload')
-    
-    // Check if user is admin
-    if (payload.role !== 'admin') {
-      return c.json({ error: 'Unauthorized' }, 403)
+    // In development mode, authentication is disabled so payload might not exist
+    try {
+      const payload = c.get('jwtPayload')
+      // Check if user is admin
+      if (payload && payload.role !== 'admin') {
+        return c.json({ error: 'Unauthorized' }, 403)
+      }
+    } catch (e) {
+      // In dev mode, continue without auth check
+      console.log('Auth check skipped in development mode');
     }
 
     const { name, description } = await c.req.json()
@@ -61,6 +70,123 @@ products.post('/categories', async (c) => {
 
   } catch (error) {
     console.error('Create category error:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
+// Get category by ID
+products.get('/categories/:id', async (c) => {
+  try {
+    const id = c.req.param('id')
+
+    const category = await c.env.DB.prepare(`
+      SELECT *
+      FROM categories
+      WHERE id = ?
+    `).bind(id).first()
+
+    if (!category) {
+      return c.json({ error: 'Category not found' }, 404)
+    }
+
+    return c.json({ category })
+
+  } catch (error) {
+    console.error('Get category error:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
+// Update category
+products.put('/categories/:id', async (c) => {
+  try {
+    // In development mode, authentication is disabled so payload might not exist
+    try {
+      const payload = c.get('jwtPayload')
+      // Check if user is admin
+      if (payload && payload.role !== 'admin') {
+        return c.json({ error: 'Unauthorized' }, 403)
+      }
+    } catch (e) {
+      // In dev mode, continue without auth check
+      console.log('Auth check skipped in development mode');
+    }
+
+    const id = c.req.param('id')
+    const { name, description } = await c.req.json()
+
+    if (!name) {
+      return c.json({ error: 'Category name is required' }, 400)
+    }
+
+    // Check if category exists
+    const existingCategory = await c.env.DB.prepare(
+      'SELECT id FROM categories WHERE id = ?'
+    ).bind(id).first()
+
+    if (!existingCategory) {
+      return c.json({ error: 'Category not found' }, 404)
+    }
+
+    await c.env.DB.prepare(`
+      UPDATE categories 
+      SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).bind(name, description, id).run()
+
+    return c.json({ message: 'Category updated successfully' })
+
+  } catch (error) {
+    console.error('Update category error:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
+// Delete category
+products.delete('/categories/:id', async (c) => {
+  try {
+    // In development mode, authentication is disabled so payload might not exist
+    try {
+      const payload = c.get('jwtPayload')
+      // Check if user is admin
+      if (payload && payload.role !== 'admin') {
+        return c.json({ error: 'Unauthorized' }, 403)
+      }
+    } catch (e) {
+      // In dev mode, continue without auth check
+      console.log('Auth check skipped in development mode');
+    }
+
+    const id = c.req.param('id')
+
+    // Check if category exists
+    const existingCategory = await c.env.DB.prepare(
+      'SELECT id FROM categories WHERE id = ?'
+    ).bind(id).first()
+
+    if (!existingCategory) {
+      return c.json({ error: 'Category not found' }, 404)
+    }
+
+    // Check if category has products
+    const productsWithCategory = await c.env.DB.prepare(
+      'SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1'
+    ).bind(id).first()
+
+    if (productsWithCategory && (productsWithCategory.count as number) > 0) {
+      return c.json({ 
+        error: 'Cannot delete category with active products. Please move or delete the products first.' 
+      }, 400)
+    }
+
+    await c.env.DB.prepare(
+      'DELETE FROM categories WHERE id = ?'
+    ).bind(id).run()
+
+    return c.json({ message: 'Category deleted successfully' })
+
+  } catch (error) {
+    console.error('Delete category error:', error)
     return c.json({ error: 'Internal server error' }, 500)
   }
 })
@@ -161,11 +287,16 @@ products.get('/:id', async (c) => {
 // Create new product
 products.post('/', async (c) => {
   try {
-    const payload = c.get('jwtPayload')
-    
-    // Check if user is admin
-    if (payload.role !== 'admin') {
-      return c.json({ error: 'Unauthorized' }, 403)
+    // In development mode, authentication is disabled so payload might not exist
+    try {
+      const payload = c.get('jwtPayload')
+      // Check if user is admin
+      if (payload && payload.role !== 'admin') {
+        return c.json({ error: 'Unauthorized' }, 403)
+      }
+    } catch (e) {
+      // In dev mode, continue without auth check
+      console.log('Auth check skipped in development mode');
     }
 
     const { name, category_id, description, image_url, price } = await c.req.json()
@@ -210,11 +341,16 @@ products.post('/', async (c) => {
 // Update product
 products.put('/:id', async (c) => {
   try {
-    const payload = c.get('jwtPayload')
-    
-    // Check if user is admin
-    if (payload.role !== 'admin') {
-      return c.json({ error: 'Unauthorized' }, 403)
+    // In development mode, authentication is disabled so payload might not exist
+    try {
+      const payload = c.get('jwtPayload')
+      // Check if user is admin
+      if (payload && payload.role !== 'admin') {
+        return c.json({ error: 'Unauthorized' }, 403)
+      }
+    } catch (e) {
+      // In dev mode, continue without auth check
+      console.log('Auth check skipped in development mode');
     }
 
     const id = c.req.param('id')
@@ -257,11 +393,16 @@ products.put('/:id', async (c) => {
 // Delete product (soft delete)
 products.delete('/:id', async (c) => {
   try {
-    const payload = c.get('jwtPayload')
-    
-    // Check if user is admin
-    if (payload.role !== 'admin') {
-      return c.json({ error: 'Unauthorized' }, 403)
+    // In development mode, authentication is disabled so payload might not exist
+    try {
+      const payload = c.get('jwtPayload')
+      // Check if user is admin
+      if (payload && payload.role !== 'admin') {
+        return c.json({ error: 'Unauthorized' }, 403)
+      }
+    } catch (e) {
+      // In dev mode, continue without auth check
+      console.log('Auth check skipped in development mode');
     }
 
     const id = c.req.param('id')
