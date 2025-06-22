@@ -3,8 +3,8 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
 
-// Import migrations
-import { runMigrations } from './db/run-migrations'
+// Import migrations - TEMPORARILY REMOVED TO DEBUG CRASH
+// import { runMigrations } from './db/run-migrations'
 
 // Import routes
 import authRoutes from './routes/auth'
