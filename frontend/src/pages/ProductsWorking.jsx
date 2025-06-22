@@ -44,8 +44,23 @@ export default function ProductsWorking() {
   
   const { categories, loading: categoriesLoading } = useCategories();
   
-  const { products, loading, error, pagination, setPage, fetchProducts, addProduct, updateProduct, deleteProduct } = useProducts();
+  // Search & Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   
+  const { products, loading, error, pagination, setPage, setSearch, setCategoryId, fetchProducts, addProduct, updateProduct, deleteProduct } = useProducts({
+    search: debouncedSearchTerm,
+    categoryId: selectedCategoryId
+  });
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
   // CRUD Dialog State Management
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -154,15 +169,24 @@ export default function ProductsWorking() {
               <Input
                 placeholder="Search products..."
                 className="w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">All</Button>
+              <Button 
+                variant={selectedCategoryId === null ? "default" : "outline"}
+                size="sm" 
+                onClick={() => setSelectedCategoryId(null)}
+              >
+                All
+              </Button>
               {categories?.map((category) => (
                 <Button 
                   key={category.id} 
-                  variant="outline" 
+                  variant={selectedCategoryId === category.id ? "default" : "outline"}
                   size="sm"
+                  onClick={() => setSelectedCategoryId(category.id)}
                 >
                   {category.name}
                 </Button>
