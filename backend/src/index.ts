@@ -74,27 +74,4 @@ app.onError((err, c) => {
   }, 500)
 })
 
-// Run database migrations during app startup
-app.use('*', async (c, next) => {
-  const { req, env } = c
-  
-  // Always check for and run pending migrations on each app startup
-  // The migration runner will track which migrations have been executed
-  // in the migrations table and only run pending ones
-  if (env.DB) {
-    try {
-      console.log('Checking for pending database migrations...')
-      await runMigrations(env.DB)
-      console.log('Migration check completed successfully')
-    } catch (error) {
-      console.error('Migration check failed:', error)
-      // Don't block the application if migrations fail
-      // just log the error and continue
-    }
-  }
-  
-  return next()
-})
-
 export default app
-

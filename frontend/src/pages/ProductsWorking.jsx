@@ -44,7 +44,7 @@ export default function ProductsWorking() {
   
   const { categories, loading: categoriesLoading } = useCategories();
   
-  const { products, loading, error, fetchProducts, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, loading, error, pagination, setPage, fetchProducts, addProduct, updateProduct, deleteProduct } = useProducts();
   
   // CRUD Dialog State Management
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -223,6 +223,35 @@ export default function ProductsWorking() {
             <p className="text-sm">Add your first product to get started</p>
           </div>
         )}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-between items-center mt-6">
+        <p className="text-sm text-gray-500">
+          Showing page {pagination?.page || 1} of {pagination?.totalPages || 1} 
+          ({pagination?.total || 0} total products)
+        </p>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setPage(pagination.page - 1)}
+            disabled={!pagination || pagination.page <= 1}
+          >
+            Previous
+          </Button>
+          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
+            Page {pagination?.page || 1}
+          </span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setPage(pagination.page + 1)}
+            disabled={!pagination || pagination.page >= pagination.totalPages}
+          >
+            Next
+          </Button>
+        </div>
       </div>
 
       {/* Add Product Dialog */}

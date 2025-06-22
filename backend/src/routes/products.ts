@@ -132,7 +132,7 @@ products.put('/categories/:id', async (c) => {
       UPDATE categories 
       SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).bind(name, description, id).run()
+    `).bind(name, description || null, id).run()
 
     return c.json({ message: 'Category updated successfully' })
 
@@ -315,8 +315,8 @@ products.post('/', async (c) => {
     }
 
     const result = await c.env.DB.prepare(`
-      INSERT INTO products (name, category_id, description, image_url, price)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO products (name, category_id, description, image_url, price, is_active)
+      VALUES (?, ?, ?, ?, ?, 1)
     `).bind(name, category_id, description || null, image_url || null, price).run()
 
     const productId = result.meta.last_row_id
@@ -380,7 +380,7 @@ products.put('/:id', async (c) => {
       UPDATE products 
       SET name = ?, category_id = ?, description = ?, image_url = ?, price = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).bind(name, category_id, description, image_url, price, id).run()
+    `).bind(name ?? null, category_id ?? null, description ?? null, image_url ?? null, price ?? null, id).run()
 
     return c.json({ message: 'Product updated successfully' })
 
@@ -429,4 +429,3 @@ products.delete('/:id', async (c) => {
 })
 
 export default products
-
