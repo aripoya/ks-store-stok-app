@@ -153,9 +153,9 @@ export default function ProductsWorking() {
   
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Products Management</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setShowAddDialog(true)}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Products Management</h1>
+        <Button className="bg-blue-600 hover:bg-blue-700 self-start sm:self-auto" onClick={() => setShowAddDialog(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Add Product
         </Button>
@@ -164,7 +164,7 @@ export default function ProductsWorking() {
       {/* Search and Filter */}
       <Card className="mb-6">
         <CardContent className="p-4">
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col md:flex-row gap-4 md:items-center">
             <div className="flex-1">
               <Input
                 placeholder="Search products..."
@@ -173,7 +173,7 @@ export default function ProductsWorking() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button 
                 variant={selectedCategoryId === null ? "default" : "outline"}
                 size="sm" 
