@@ -82,102 +82,169 @@ export default function Products() {
   });
 
   return (
-    <div className="container py-6">
+    <div className="container py-4 px-4 max-w-7xl mx-auto">
       <Card>
-        <CardHeader className="flex flex-col sm:flex-row gap-4 items-start justify-between pb-2">
-          <div>
-            <CardTitle>Daftar Produk</CardTitle>
+        <CardHeader className="flex flex-col gap-4 pb-4">
+          {/* Title and Add Button Row */}
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+            <div>
+              <CardTitle className="text-xl sm:text-2xl">Daftar Produk</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">Kelola produk bakpia Anda</p>
+            </div>
+            
+            <Button 
+              size="sm" 
+              className="w-full sm:w-auto"
+              onClick={() => setAddProductOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Tambah Produk
+            </Button>
           </div>
           
-          <Button size="sm" className="mb-2" onClick={() => setAddProductOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Tambah Produk
-          </Button>
-          
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          {/* Search and Filter Row */}
+          <div className="flex flex-col sm:flex-row gap-3">
             {/* Search input */}
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Cari produk..."
-                className="pl-8"
+                className="pl-10 w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             
             {/* Category filter */}
-            <Select 
-              value={selectedCategory || ''} 
-              onValueChange={(value) => setSelectedCategory(value ? parseInt(value) : null)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter kategori" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Semua kategori</SelectItem>
-                {!categoriesLoading && categories?.map((category) => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="w-full sm:w-[200px]">
+              <Select 
+                value={selectedCategory || ''} 
+                onValueChange={(value) => setSelectedCategory(value ? parseInt(value) : null)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filter kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Semua kategori</SelectItem>
+                  {!categoriesLoading && categories?.map((category) => (
+                    <SelectItem key={category.id} value={category.id.toString()}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           {productsLoading ? (
-            <p className="text-muted-foreground">Memuat produk...</p>
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-muted-foreground" />
+                <p className="text-muted-foreground">Memuat produk...</p>
+              </div>
+            </div>
           ) : productsError ? (
-            <div className="text-red-500">
-              <p>Error: {productsError}</p>
-              <p className="text-muted-foreground text-sm">Menggunakan data produk lokal</p>
+            <div className="text-center py-12">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <div className="text-red-500">
+                <p className="font-medium">Error: {productsError}</p>
+                <p className="text-muted-foreground text-sm mt-1">Menggunakan data produk lokal</p>
+              </div>
             </div>
           ) : !Array.isArray(products) || products.length === 0 ? (
-            <div>
-              <p className="text-muted-foreground">Tidak ada produk yang ditemukan</p>
+            <div className="text-center py-12">
+              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground text-lg font-medium">Tidak ada produk yang ditemukan</p>
+              <p className="text-muted-foreground text-sm mt-1">Mulai dengan menambahkan produk baru</p>
             </div>
           ) : (
             <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Product Count */}
+              <div className="mb-4">
+                <p className="text-sm text-muted-foreground">
+                  Menampilkan {products.length} produk
+                </p>
+              </div>
+              
+              {/* Product Grid - Enhanced Mobile Layout */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {products.map(product => (
-                  <div key={product.id} className="border rounded-lg p-3 hover:bg-muted/50">
-                    <div className="flex justify-between">
-                      <h3 className="font-medium">{product.name}</h3>
-                      <div className="flex gap-1">
+                  <div key={product.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                    {/* Product Header */}
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1 min-w-0 mr-2">
+                        <h3 className="font-medium text-base leading-tight truncate">{product.name}</h3>
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {product.category_name}
+                        </Badge>
+                      </div>
+                      
+                      {/* Action Buttons - Improved Mobile Layout */}
+                      <div className="flex gap-1 flex-shrink-0">
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600"
                           onClick={() => {
                             setEditingProduct(product);
                             setEditProductOpen(true);
                           }}
                         >
-                          <Pencil className="h-3.5 w-3.5" />
+                          <Pencil className="h-4 w-4" />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-6 w-6 text-red-500 hover:text-red-600 hover:bg-red-50"
+                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                           onClick={() => {
                             setDeletingProduct(product);
                             setDeleteConfirmOpen(true);
                           }}
                         >
-                          <Trash className="h-3.5 w-3.5" />
+                          <Trash className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      <Badge variant="outline" className="mr-2">{product.category_name}</Badge>
-                      <span>Rp {product.price?.toLocaleString() || 0}</span>
-                    </div>
-                    <div className="mt-2 text-sm">
-                      <span className={`${(product.current_stock || 0) > 20 ? 'text-green-600' : (product.current_stock || 0) > 5 ? 'text-amber-600' : 'text-red-600'}`}>
-                        Stok: {product.current_stock || 0}
+                    
+                    {/* Product Price */}
+                    <div className="mb-3">
+                      <span className="text-lg font-semibold text-green-600">
+                        Rp {product.price?.toLocaleString() || 0}
                       </span>
                     </div>
+                    
+                    {/* Stock Information - Enhanced Mobile Display */}
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Stok: </span>
+                        <span className={`font-medium ${
+                          (product.current_stock || 0) > 20 
+                            ? 'text-green-600' 
+                            : (product.current_stock || 0) > 5 
+                            ? 'text-amber-600' 
+                            : 'text-red-600'
+                        }`}>
+                          {product.current_stock || 0}
+                        </span>
+                      </div>
+                      
+                      {/* Stock Status Badge */}
+                      {(product.current_stock || 0) <= 5 && (
+                        <Badge variant="destructive" className="text-xs">
+                          Stok Rendah
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {/* Product Description - Show on larger screens */}
+                    {product.description && (
+                      <div className="mt-3 hidden sm:block">
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {product.description}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

@@ -5,10 +5,16 @@ compatibility_date = "2024-12-01"
 [env.production]
 name = "bakpia-stok-api"
 
+# Add missing database binding for production environment
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "bakpia-stok-db"
+database_id = "4c9ef6a9-282f-4e37-b0ba-3fec5e03a1c6"
+
 [env.development]
 name = "bakpia-stok-api-dev"
 
-# Database binding
+# Database binding - RE-ENABLING TO TEST CRASH FIX
 [[d1_databases]]
 binding = "DB"
 database_name = "bakpia-stok-db"
@@ -22,4 +28,4 @@ ENVIRONMENT = "development"
 # CORS settings
 [env.production.vars]
 ENVIRONMENT = "production"
-
+JWT_SECRET = "bc56dc797fef04a50343b4a6bc75605e50c7e0eb2cde0b60d80b32bd088cde39ecab6af0486cc24e3ae22492b6f77e62e3401ec815f7d0ceaf18e1490c664594"

@@ -2,7 +2,7 @@
 // Use local development URL when in development mode
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = isLocalDev 
-  ? 'http://localhost:8080' 
+  ? 'http://localhost:8787' 
   : 'https://bakpia-stok-api.wahwooh.workers.dev';
 
 /**
@@ -10,6 +10,16 @@ const API_BASE_URL = isLocalDev
  */
 async function fetchAPI(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  // CRITICAL DEBUG: Log all request details
+  console.log('🔍 DEBUG API Request:', {
+    url,
+    API_BASE_URL,
+    endpoint,
+    isLocalDev,
+    hostname: window.location.hostname,
+    fullURL: url
+  });
   
   // Add default headers
   const headers = {
@@ -24,19 +34,36 @@ async function fetchAPI(endpoint, options = {}) {
   }
 
   try {
+    console.log('🚀 Making fetch request to:', url);
     const response = await fetch(url, {
       ...options,
       headers
     });
 
+    console.log('📡 Response received:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      url: response.url
+    });
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `API Error: ${response.status}`);
+      const errorMsg = errorData.message || `API Error: ${response.status}`;
+      console.error('❌ API Error Response:', errorData);
+      throw new Error(errorMsg);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('✅ API Success:', { url, dataLength: Array.isArray(data) ? data.length : 'object' });
+    return data;
   } catch (error) {
-    console.error('API request failed:', error);
+    console.error('💥 API request failed:', {
+      url,
+      error: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     throw error;
   }
 }
@@ -87,7 +114,7 @@ export const stockAPI = {
   
   // Get low stock products
   getLowStock: async () => {
-    return fetchAPI('/api/stock/low');
+    return fetchAPI('/api/stock?low_stock=true');
   }
 };
 
