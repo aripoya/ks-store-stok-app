@@ -305,7 +305,7 @@ products.post('/', async (c) => {
       console.log('Auth check skipped in development mode');
     }
 
-    const { name, category_id, description, image_url, price, barcode } = await c.req.json()
+    const { name, category_id, description, image_url, price, barcode, stock } = await c.req.json()
 
     if (!name || !category_id || !price) {
       return c.json({ error: 'Name, category_id, and price are required' }, 400)
@@ -332,22 +332,28 @@ products.post('/', async (c) => {
     }
 
     const result = await c.env.DB.prepare(`
-      INSERT INTO products (name, category_id, description, image_url, price, barcode, is_active)
-      VALUES (?, ?, ?, ?, ?, ?, 1)
-    `).bind(name, category_id, description || null, image_url || null, price, barcode || null).run()
+      INSERT INTO products (name, category_id, description, image_url, price, barcode, stock, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+    `).bind(name, category_id, description || null, image_url || null, price, barcode || null, stock || 0).run()
 
     const productId = result.meta.last_row_id
 
-    // Initialize stock for new product
+    // Initialize stock for new product - use provided stock value or default to 0
+    const initialStock = stock || 0
     await c.env.DB.prepare(`
       INSERT INTO stock (product_id, initial_stock, current_stock, min_stock)
-      VALUES (?, 0, 0, 5)
-    `).bind(productId).run()
+      VALUES (?, ?, ?, 5)
+    `).bind(productId, initialStock, initialStock).run()
 
-    return c.json({ 
-      message: 'Product created successfully',
-      productId
-    })
+    // Fetch the complete product data to return
+    const newProduct = await c.env.DB.prepare(`
+      SELECT p.*, c.name as category_name 
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.id = ?
+    `).bind(productId).first()
+
+    return c.json(newProduct)
 
   } catch (error) {
     console.error('Create product error:', error)

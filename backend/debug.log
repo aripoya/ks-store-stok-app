@@ -1,0 +1,97 @@
+🪵  Writing logs to "/Users/ipoy/.wrangler/logs/wrangler-2025-06-22_19-34-28_999.log"
+Metrics dispatcher: Posting data {"deviceId":"d8379fe8-5106-4ec0-b0a0-c34a2160bfe4","event":"wrangler command started","timestamp":1750620869051,"properties":{"amplitude_session_id":1750620869049,"amplitude_event_id":0,"wranglerVersion":"4.20.5","osPlatform":"Mac OS","osVersion":"Darwin Kernel Version 24.5.0: Tue Apr 22 19:54:43 PDT 2025; root:xnu-11417.121.6~2/RELEASE_ARM64_T8132","nodeVersion":23,"packageManager":"npm","isFirstUsage":false,"configFileType":"toml","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"argsUsed":["compatibilityDate","logLevel"],"argsCombination":"compatibilityDate, logLevel","command":"wrangler dev","args":{"compatibilityDate":"<REDACTED>","logLevel":"debug","xJsonConfig":true,"j":true,"latest":true,"noBundle":false,"remote":false,"r":false,"testScheduled":false,"xVectorizeBindToProd":false,"xImagesLocalMode":false}}}
+.env file not found at ".env". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+
+ ⛅️ wrangler 4.20.5
+───────────────────
+.env file not found at ".dev.vars". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+Your Worker has access to the following bindings:
+Binding                                                           Resource                  Mode
+env.DB (bakpia-stok-db)                                           D1 Database               local
+env.JWT_SECRET ("bc56dc797fef04a50343b4a6bc75605e50c7e...")       Environment Variable      local
+env.ENVIRONMENT ("development")                                   Environment Variable      local
+
+RemoteRuntimeController teardown beginning...
+RemoteRuntimeController teardown complete
+⎔ Starting local server...
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mworkerd/server/server.c++:3982: info: Inspector is listening[0m
+
+
+[wrangler-ProxyWorker:info] Ready on http://localhost:8787
+[InspectorProxyWorker] handleProxyControllerIncomingMessage {"type":"reloadStart"}
+[InspectorProxyWorker] handleProxyControllerIncomingMessage {"type":"reloadComplete","proxyData":{"userWorkerUrl":{"protocol":"http:","hostname":"127.0.0.1","port":"52201"},"userWorkerInspectorUrl":{"protocol":"ws:","hostname":"127.0.0.1","port":"52198","pathname":"/core:user:bakpia-stok-api"},"userWorkerInnerUrlOverrides":{"protocol":"http:"},"headers":{"MF-Proxy-Shared-Secret":"33f93e19-7777-48e6-a9b7-2365e7f5cc83"},"liveReload":false,"proxyLogsToController":false,"internalDurableObjects":[],"entrypointAddresses":{"default":{"host":"127.0.0.1","port":52202}}}}
+[InspectorProxyWorker] reconnectRuntimeWebSocket
+[InspectorProxyWorker] NEW RUNTIME WEBSOCKET http://127.0.0.1:52198/core:user:bakpia-stok-api
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mworkerd/server/server.c++:1340: info: Inspector client attaching [core:user:bakpia-stok-api][0m
+
+
+[InspectorProxyWorker] SEND TO DEVTOOLS {"method":"Runtime.executionContextsCleared"}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '4',
+    url: 'cloudflare-internal:d1-api',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 390,
+    endColumn: 0,
+    executionContextId: 153622625,
+    hash: 'f4316a8ee94643f57695b89a32ed3b9c709663174472eaaf27b74b5813eff99e',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 15076,
+    scriptLanguage: 'JavaScript',
+    embedderName: 'cloudflare-internal:d1-api'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '3',
+    url: 'file:///Users/ipoy/Documents/Kurniasari%20web/bakpia-stok-app/backend/.wrangler/tmp/dev-Jgj8ka/index.js',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 5401,
+    endColumn: 117,
+    executionContextId: 153622625,
+    hash: '74b757f02f1920fb9d9fe1d5dec704e5f74c1c05e83c697deb2aeea7120b189f',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: 'index.js.map',
+    hasSourceURL: true,
+    isModule: true,
+    length: 160913,
+    scriptLanguage: 'JavaScript',
+    embedderName: 'index.js'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000003, method: 'Network.enable', result: {} }
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (2ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.enable","id":100000001}
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Debugger.enable","id":100000002}
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (0ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Network.enable","id":100000003}
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (0ms)
+[InspectorProxyWorker] RUNTIME WEBSOCKET OPENED
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.executionContextCreated',
+  params: {
+    context: {
+      id: 153622625,
+      origin: '',
+      name: 'Worker',
+      uniqueId: '-914312066133206845.1151717005648017124'
+    }
+  }
+}
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/play 204 No Content (0ms)
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000001, result: {} }
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  id: 100000002,
+  result: { debuggerId: '1310298748847060836.112513704256771543' }
+}
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000004}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000004, result: { id: '93a908697e27f942' } }

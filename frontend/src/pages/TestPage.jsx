@@ -1,87 +1,110 @@
 import { useState, useEffect } from 'react';
+// Use the fixed API services instead of broken environment variable logic
+import { productsAPI, categoriesAPI } from '../services/api';
 
 /**
  * Simple test page to verify API connectivity and data rendering
  */
 export default function TestPage() {
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     async function fetchData() {
+      console.log('🔍 TestPage: Starting fetchData with proper API services...');
       setLoading(true);
       setError(null);
-      
+
       try {
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-        console.log('Test Page using API URL:', API_BASE_URL);
+        // Use the fixed API services
+        const [categoriesResponse, productsResponse] = await Promise.all([
+          categoriesAPI.getAll(),
+          productsAPI.getAll({ page: 1, limit: 5 })
+        ]);
+
+        console.log('✅ TestPage: API success - Categories:', categoriesResponse?.length || 0, 'Products:', productsResponse?.data?.length || 0);
         
-        // Fetch categories
-        const categoryRes = await fetch(`${API_BASE_URL}/api/categories`);
-        if (!categoryRes.ok) throw new Error(`Categories API error: ${categoryRes.status}`);
-        const categoryData = await categoryRes.json();
-        setCategories(categoryData);
-        
-        // Fetch products
-        const productRes = await fetch(`${API_BASE_URL}/api/products`);
-        if (!productRes.ok) throw new Error(`Products API error: ${productRes.status}`);
-        const productData = await productRes.json();
-        setProducts(productData.products || []);
-        
-        setLoading(false);
+        setData({
+          categories: categoriesResponse || [],
+          products: productsResponse?.data || [],
+          totalProducts: productsResponse?.total || 0
+        });
       } catch (err) {
-        console.error('Test Page Error:', err);
+        console.error('❌ TestPage: API error:', err);
         setError(err.message);
+        setData(null);
+      } finally {
         setLoading(false);
       }
     }
-    
+
     fetchData();
   }, []);
-  
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-6">Test Page</h1>
+        <p>Loading test data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-6">Test Page</h1>
+        <div className="p-4 bg-red-50 border border-red-200 rounded">
+          <p className="text-red-600">Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">API Test Page</h1>
+      <h1 className="text-3xl font-bold mb-6">Test Page</h1>
       
-      {loading && <p>Loading data...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h2 className="text-xl font-bold mb-2">Categories ({categories.length})</h2>
-          <div className="border rounded-lg p-4">
-            {categories.length > 0 ? (
-              <ul className="list-disc list-inside">
-                {categories.map(category => (
-                  <li key={category.id}>
-                    {category.id}: {category.name}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No categories found</p>
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="p-4 border rounded-lg bg-white shadow">
+          <h2 className="text-xl font-semibold mb-4">Categories Test</h2>
+          <p className="mb-2">✅ Loaded {data?.categories?.length || 0} categories</p>
+          <div className="space-y-2">
+            {data?.categories?.slice(0, 3).map((category) => (
+              <div key={category.id} className="p-2 bg-gray-50 rounded">
+                {category.name}
+              </div>
+            ))}
+            {data?.categories?.length > 3 && (
+              <p className="text-sm text-gray-600">... and {data.categories.length - 3} more</p>
             )}
           </div>
         </div>
-        
-        <div>
-          <h2 className="text-xl font-bold mb-2">Products ({products.length})</h2>
-          <div className="border rounded-lg p-4">
-            {products.length > 0 ? (
-              <ul className="list-disc list-inside">
-                {products.map(product => (
-                  <li key={product.id}>
-                    {product.id}: {product.name} ({product.category_name})
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No products found</p>
+
+        <div className="p-4 border rounded-lg bg-white shadow">
+          <h2 className="text-xl font-semibold mb-4">Products Test</h2>
+          <p className="mb-2">✅ Loaded {data?.products?.length || 0} products (of {data?.totalProducts || 0} total)</p>
+          <div className="space-y-2">
+            {data?.products?.slice(0, 3).map((product) => (
+              <div key={product.id} className="p-2 bg-gray-50 rounded">
+                <div className="font-medium">{product.name}</div>
+                <div className="text-sm text-gray-600">Rp {product.price?.toLocaleString('id-ID')}</div>
+              </div>
+            ))}
+            {data?.products?.length > 3 && (
+              <p className="text-sm text-gray-600">... and {data.products.length - 3} more</p>
             )}
           </div>
         </div>
+      </div>
+      
+      <div className="mt-8 p-4 bg-blue-50 rounded">
+        <h3 className="font-semibold mb-2">Debug Info</h3>
+        <p>✅ Using centralized API services from services/api.js</p>
+        <p>✅ No more broken VITE_API_URL dependencies</p>
+        <p>✅ Concurrent API calls with Promise.all</p>
+        <p>Categories: {data?.categories?.length || 0} | Products: {data?.products?.length || 0}/{data?.totalProducts || 0}</p>
       </div>
     </div>
   );

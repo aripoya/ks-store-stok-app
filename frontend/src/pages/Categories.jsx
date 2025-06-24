@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-
-// Use the environment variable when available, otherwise use a relative path for local dev
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, Plus, Pencil, Trash, X, Check, AlertCircle } from 'lucide-react'
 import {
@@ -29,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { categoriesAPI } from '../services/api';
 
 // Categories component with CRUD functionality
 export default function Categories() {
@@ -43,59 +41,41 @@ export default function Categories() {
   
   const { toast } = useToast();
 
-  // Use the API_BASE_URL for correct API paths
-  console.log('Categories using API_BASE_URL:', API_BASE_URL);
-
   useEffect(() => {
+    async function fetchCategories() {
+      console.log('🔍 Categories: Starting fetchCategories with proper API service...');
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Use the fixed categoriesAPI service
+        const data = await categoriesAPI.getAll();
+        console.log('✅ Categories: API success, received categories:', data?.length || 0);
+        
+        if (data && Array.isArray(data)) {
+          setCategories(data);
+        } else {
+          console.log('⚠️ Categories: No data returned, setting empty array');
+          setCategories([]);
+        }
+      } catch (err) {
+        console.error('❌ Categories: API error:', err);
+        setError(err.message);
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     fetchCategories();
   }, []);
-
-  // Load categories from API
-  async function fetchCategories() {
-    setLoading(true);
-    try {
-      // Use API_BASE_URL for proper path construction
-      const url = `${API_BASE_URL}/api/categories`;
-      console.log('Fetching categories from:', url);
-      const response = await fetch(url);
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Categories data:', data);
-      setCategories(data.categories || []);
-    } catch (err) {
-      console.error('Failed to fetch categories:', err);
-      setError(err.message || 'Failed to load categories');
-      
-      // Fallback hardcoded categories
-      setCategories([
-        { id: 1, name: 'Bakpia Klasik', description: 'Bakpia dengan rasa klasik khas Yogyakarta' },
-        { id: 2, name: 'Bakpia Premium', description: 'Bakpia dengan bahan premium dan rasa istimewa' },
-        { id: 3, name: 'Bakpia Spesial', description: 'Bakpia dengan varian rasa spesial' },
-        { id: 4, name: 'Paket Oleh-oleh', description: 'Bakpia untuk oleh-oleh dan buah tangan' },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   // Create new category
   async function createCategory(formData) {
     setFormLoading(true);
     setFormError(null);
     try {
-      const url = `${API_BASE_URL}/api/categories`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await categoriesAPI.create(formData);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -123,14 +103,7 @@ export default function Categories() {
     setFormLoading(true);
     setFormError(null);
     try {
-      const url = `${API_BASE_URL}/api/categories/${id}`;
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await categoriesAPI.update(id, formData);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -158,10 +131,7 @@ export default function Categories() {
   async function deleteCategory(id) {
     setDeleteLoading(true);
     try {
-      const url = `${API_BASE_URL}/api/categories/${id}`;
-      const response = await fetch(url, {
-        method: 'DELETE',
-      });
+      const response = await categoriesAPI.delete(id);
 
       if (!response.ok) {
         const errorData = await response.json();

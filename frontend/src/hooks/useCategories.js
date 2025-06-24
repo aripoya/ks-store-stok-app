@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react';
-// Import categoriesAPI directly to avoid potential 'global' issues
-// import { categoriesAPI } from '../services/api';
-
-// Use the environment variable when available, otherwise use a relative path for local dev with proxy
-// This ensures our code works in both development and production environments
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-console.log('useCategories: API_BASE_URL =', API_BASE_URL);
+// Use the fixed API service instead of broken environment variable logic
+import { categoriesAPI } from '../services/api';
 
 /**
  * A hook for fetching and managing category data
  */
 export const useCategories = () => {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  console.log('🎯 useCategories: Hook initialized - categories:', categories.length, 'loading:', loading);
 
   // Fallback categories data
   const fallbackCategories = [
@@ -23,36 +20,43 @@ export const useCategories = () => {
     { id: 4, name: 'Paket Oleh-oleh', description: 'Bakpia untuk oleh-oleh dan buah tangan' },
   ];
 
-  // Fetch all categories directly (without using the API service)
+  // Fetch all categories using proper API service
   const fetchCategories = async () => {
-    console.log('useCategories: Starting fetchCategories...');
+    console.log('🔍 useCategories: Starting fetchCategories with proper API service...');
+    console.log('🔍 useCategories: Current window.location:', window.location.href);
+    console.log('🔍 useCategories: Environment check - hostname:', window.location.hostname);
+    
     setLoading(true);
     setError(null);
-    
+
     try {
-      // Use the API_BASE_URL for proper path construction
-      const url = `${API_BASE_URL}/api/categories`;
-      console.log('useCategories: Fetching from URL:', url);
-      const response = await fetch(url);
-      console.log('useCategories: Response received:', response.status, response.statusText);
+      console.log('🔍 useCategories: Calling categoriesAPI.getAll()...');
+      // Use the fixed categoriesAPI service instead of custom fetch logic
+      const data = await categoriesAPI.getAll();
+      console.log('✅ useCategories: API success, received data type:', typeof data, 'isArray:', Array.isArray(data));
+      console.log('✅ useCategories: API success, received categories:', data?.length || 0, 'data:', data);
       
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+      if (data && Array.isArray(data) && data.length > 0) {
+        console.log('✅ useCategories: Setting categories state with', data.length, 'items');
+        setCategories(data);
+        console.log('✅ useCategories: Categories state set successfully');
+      } else {
+        console.log('⚠️ useCategories: No data returned, using fallback categories');
+        setCategories(fallbackCategories);
       }
-      
-      const data = await response.json();
-      console.log('useCategories: API data received:', data);
-      setCategories(data);
     } catch (err) {
-      console.error('useCategories: API failed, using fallback:', err);
-      setError(err.message || 'Failed to load categories');
-      
-      // Set fallback categories when API fails
-      console.log('useCategories: Setting fallback categories:', fallbackCategories);
+      console.error('❌ useCategories: API error, using fallback:', err);
+      console.error('❌ useCategories: Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      setError(err.message);
       setCategories(fallbackCategories);
     } finally {
+      console.log('🔍 useCategories: Setting loading to false');
       setLoading(false);
-      console.log('useCategories: fetchCategories completed');
+      console.log('🔍 useCategories: Loading set to false');
     }
   };
 
@@ -62,9 +66,9 @@ export const useCategories = () => {
     fetchCategories();
   }, []);
 
-  // Debug current state
+  // Debug log every state change
   useEffect(() => {
-    console.log('useCategories: State update - categories:', categories, 'loading:', loading, 'error:', error);
+    console.log('🎯 useCategories: State update - categories:', categories.length, 'loading:', loading, 'error:', error);
   }, [categories, loading, error]);
 
   return {

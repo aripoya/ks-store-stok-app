@@ -1,0 +1,922 @@
+🪵  Writing logs to "/Users/ipoy/.wrangler/logs/wrangler-2025-06-22_09-56-22_302.log"
+Metrics dispatcher: Posting data {"deviceId":"d8379fe8-5106-4ec0-b0a0-c34a2160bfe4","event":"wrangler command started","timestamp":1750586182352,"properties":{"amplitude_session_id":1750586182351,"amplitude_event_id":0,"wranglerVersion":"4.20.5","osPlatform":"Mac OS","osVersion":"Darwin Kernel Version 24.5.0: Tue Apr 22 19:54:43 PDT 2025; root:xnu-11417.121.6~2/RELEASE_ARM64_T8132","nodeVersion":23,"packageManager":"npm","isFirstUsage":false,"configFileType":"toml","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"argsUsed":["logLevel","port"],"argsCombination":"logLevel, port","command":"wrangler dev","args":{"port":8080,"logLevel":"debug","xJsonConfig":true,"j":true,"latest":true,"noBundle":false,"remote":false,"r":false,"testScheduled":false,"xVectorizeBindToProd":false,"xImagesLocalMode":false}}}
+.env file not found at ".env". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+
+ ⛅️ wrangler 4.20.5
+───────────────────
+.env file not found at ".dev.vars". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+Your Worker has access to the following bindings:
+Binding                                                           Resource                  Mode
+env.DB (bakpia-stok-db)                                           D1 Database               local
+env.JWT_SECRET ("bc56dc797fef04a50343b4a6bc75605e50c7e...")       Environment Variable      local
+env.ENVIRONMENT ("development")                                   Environment Variable      local
+
+RemoteRuntimeController teardown beginning...
+RemoteRuntimeController teardown complete
+⎔ Starting local server...
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mworkerd/server/server.c++:3982: info: Inspector is listening[0m
+
+
+[wrangler-ProxyWorker:info] Ready on http://localhost:8080
+[InspectorProxyWorker] SEND TO DEVTOOLS {"method":"Runtime.executionContextsCleared"}
+[InspectorProxyWorker] handleProxyControllerIncomingMessage {"type":"reloadStart"}
+[InspectorProxyWorker] handleProxyControllerIncomingMessage {"type":"reloadComplete","proxyData":{"userWorkerUrl":{"protocol":"http:","hostname":"127.0.0.1","port":"64031"},"userWorkerInspectorUrl":{"protocol":"ws:","hostname":"127.0.0.1","port":"64028","pathname":"/core:user:bakpia-stok-api"},"userWorkerInnerUrlOverrides":{"protocol":"http:"},"headers":{"MF-Proxy-Shared-Secret":"83952755-4557-4bb2-a392-d7f6aa22052f"},"liveReload":false,"proxyLogsToController":false,"internalDurableObjects":[],"entrypointAddresses":{"default":{"host":"127.0.0.1","port":64032}}}}
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mworkerd/server/server.c++:1340: info: Inspector client attaching [core:user:bakpia-stok-api][0m
+
+
+[InspectorProxyWorker] RUNTIME WEBSOCKET OPENED
+[InspectorProxyWorker] reconnectRuntimeWebSocket
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.executionContextCreated',
+  params: {
+    context: {
+      id: 423708673,
+      origin: '',
+      name: 'Worker',
+      uniqueId: '-8607472286339413514.-8030760854240064210'
+    }
+  }
+}
+[InspectorProxyWorker] NEW RUNTIME WEBSOCKET http://127.0.0.1:64028/core:user:bakpia-stok-api
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000003, method: 'Network.enable', result: {} }
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '3',
+    url: 'file:///Users/ipoy/Documents/Kurniasari%20web/bakpia-stok-app/backend/.wrangler/tmp/dev-Gt9Gjg/index.js',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 5391,
+    endColumn: 117,
+    executionContextId: 423708673,
+    hash: '443f90ac5f48548407d445a6d31ea18dee3d1a49d937052da2c3441e9e9a4030',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: 'index.js.map',
+    hasSourceURL: true,
+    isModule: true,
+    length: 160181,
+    scriptLanguage: 'JavaScript',
+    embedderName: 'index.js'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '4',
+    url: 'cloudflare-internal:d1-api',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 390,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: 'f4316a8ee94643f57695b89a32ed3b9c709663174472eaaf27b74b5813eff99e',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 15076,
+    scriptLanguage: 'JavaScript',
+    embedderName: 'cloudflare-internal:d1-api'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  id: 100000002,
+  result: { debuggerId: '-2633108397391498364.1467657449161836693' }
+}
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (2ms)
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (0ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.enable","id":100000001}
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (1ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Debugger.enable","id":100000002}
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Network.enable","id":100000003}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000001, result: {} }
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/play 204 No Content (0ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000004}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000004, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000005}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000005, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000006}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000006, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000007}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000007, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000008}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000008, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586241290,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '5',
+    url: 'node-internal:internal_inspect',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 2462,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: '9dbdbb406c3a851c58d3189a6e50bb909e5128fd76d1a2f05f7ac208832bcf08',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 94136,
+    stackTrace: { callFrames: [Array] },
+    scriptLanguage: 'JavaScript',
+    embedderName: 'node-internal:internal_inspect'
+  }
+}
+<-- GET /health
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '6',
+    url: 'node-internal:internal_buffer',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 1802,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: '92d5788fd3d41bdb1ac750c9930a7a5a5cfd9cd8a053efc4d9ba957f90d570bf',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 62909,
+    stackTrace: { callFrames: [Array] },
+    scriptLanguage: 'JavaScript',
+    embedderName: 'node-internal:internal_buffer'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '9',
+    url: 'node-internal:internal_errors',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 679,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: '4c8f7f8886a4697985fc2eea6ea0f331af66a707c0c10f92918930a7e4dbd926',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 23037,
+    stackTrace: { callFrames: [Array] },
+    scriptLanguage: 'JavaScript',
+    embedderName: 'node-internal:internal_errors'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '7',
+    url: 'node-internal:internal_types',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 118,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: '65cc7262d944441d3188f24d27e046aa7b782eac144463a59ba551a76f3ce4c4',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 5251,
+    stackTrace: { callFrames: [Array] },
+    scriptLanguage: 'JavaScript',
+    embedderName: 'node-internal:internal_types'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '11',
+    url: 'node-internal:crypto_util',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 95,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: 'e782db88b566a35b9be61cd3053e043056ef86b913c3f51274d1ab12b1d9c5b0',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 3973,
+    stackTrace: { callFrames: [Array] },
+    scriptLanguage: 'JavaScript',
+    embedderName: 'node-internal:crypto_util'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '8',
+    url: 'node-internal:validators',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 256,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: 'f67efeb8492ebe7293c983251635eab25f17d4e2082921f1929ca76f1959abc0',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 9993,
+    stackTrace: { callFrames: [Array] },
+    scriptLanguage: 'JavaScript',
+    embedderName: 'node-internal:validators'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '10',
+    url: 'node-internal:internal_utils',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 242,
+    endColumn: 0,
+    executionContextId: 423708673,
+    hash: '04f8844162e31bea0ceb1a6f41886ac1b0351176d0c1fb5c2661362740b4c0a3',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 8674,
+    stackTrace: { callFrames: [Array] },
+    scriptLanguage: 'JavaScript',
+    embedderName: 'node-internal:internal_utils'
+  }
+}
+--> GET /health [32m200[0m 5ms
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586241300,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[wrangler-ProxyWorker:info] GET /health 200 OK (18ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000009}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000009, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000010}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000010, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000011}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000011, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000012}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000012, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000013}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000013, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000014}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000014, result: { id: '90da978d936ef21f' } }
+<-- GET /api/products
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586294456,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.requestWillBeSent',
+  params: {
+    requestId: '0',
+    loaderId: '',
+    request: {
+      url: 'http://d1/query?resultsFormat=ROWS_AND_COLUMNS',
+      method: 'POST',
+      headers: [Object],
+      mixedContentType: 'blockable',
+      initialPriority: 'VeryLow',
+      referrerPolicy: 'unsafe-url',
+      isLinkPreload: false
+    },
+    timestamp: 812441.075,
+    wallTime: 1750586294.457,
+    initiator: { type: 'script', stack: [Object], lineNumber: 0 },
+    type: 'Fetch'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.responseReceived',
+  params: {
+    requestId: '0',
+    timestamp: 812441.083,
+    type: 'XHR',
+    response: {
+      status: 200,
+      statusText: 'OK',
+      headers: [Object],
+      mimeType: 'application/json',
+      connectionReused: false,
+      connectionId: 0,
+      remotePort: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      encodedDataLength: 0,
+      protocol: 'http/1.1',
+      securityState: 'unknown'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.dataReceived',
+  params: {
+    requestId: '0',
+    timestamp: 812441.083,
+    dataLength: 1771,
+    encodedDataLength: 1771
+  }
+}
+--> GET /api/products [32m200[0m 12ms
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.requestWillBeSent',
+  params: {
+    requestId: '1',
+    loaderId: '',
+    request: {
+      url: 'http://d1/query?resultsFormat=ROWS_AND_COLUMNS',
+      method: 'POST',
+      headers: [Object],
+      mixedContentType: 'blockable',
+      initialPriority: 'VeryLow',
+      referrerPolicy: 'unsafe-url',
+      isLinkPreload: false
+    },
+    timestamp: 812441.083,
+    wallTime: 1750586294.466,
+    initiator: { type: 'script', stack: [Object], lineNumber: 0 },
+    type: 'Fetch'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.loadingFinished',
+  params: {
+    requestId: '0',
+    timestamp: 812441.083,
+    encodedDataLength: 1771,
+    cfResponse: {
+      body: 'W3sic3VjY2VzcyI6dHJ1ZSwicmVzdWx0cyI6eyJjb2x1bW5zIjpbImlkIiwibmFtZSIsImNhdGVnb3J5X2lkIiwiZGVzY3JpcHRpb24iLCJpbWFnZV91cmwiLCJwcmljZSIsImlzX2FjdGl2ZSIsImNyZWF0ZWRfYXQiLCJ1cGRhdGVkX2F0IiwiY2F0ZWdvcnlfbmFtZSIsImN1cnJlbnRfc3RvY2siLCJtaW5fc3RvY2siXSwicm93cyI6W1syLCJCYWtwaWEgUGF0aG9rIENva2xhdCIsMSwiQmFrcGlhIG9yaWdpbmFsIGRlbmdhbiBpc2lhbiBjb2tsYXQiLG51bGwsMjcwMDAsMSwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIjIwMjUtMDYtMjAgMTI6MzI6NTMiLCJCYWtwaWEgS2xhc2lrIiwxMDAsMTBdLFsxLCJCYWtwaWEgUGF0aG9rIE9yaWdpbmFsIiwxLCJCYWtwaWEgb3JpZ2luYWwgZGVuZ2FuIGlzaWFuIGthY2FuZyBoaWphdSIsbnVsbCwyNTAwMCwxLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIkJha3BpYSBLbGFzaWsiLDEwMCwxMF0sWzQsIkJha3BpYSBQcmVtaXVtIER1cmlhbiIsMiwiQmFrcGlhIHByZW1pdW0gZGVuZ2FuIGlzaWFuIGR1cmlhbiBhc2xpIixudWxsLDQwMDAwLDEsIjIwMjUtMDYtMjAgMTI6MzI6NTMiLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiQmFrcGlhIFByZW1pdW0iLDMwLDVdLFszLCJCYWtwaWEgUHJlbWl1bSBLZWp1IiwyLCJCYWtwaWEgcHJlbWl1bSBkZW5nYW4gaXNpYW4ga2VqdSBiZXJrdWFsaXRhcyIsbnVsbCwzNTAwMCwxLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIkJha3BpYSBQcmVtaXVtIiw1MCw1XSxbMTIsIkNPS0VMQVQiLDcsIkhERkRIIixudWxsLDEwMDAwMCwxLCIyMDI1LTA2LTIxIDExOjUxOjM4IiwiMjAyNS0wNi0yMSAxMTo1MTozOCIsIktlcmlwaWsgJiBDYW1pbGFuIiwwLDVdLFsxMSwiR3VkZWcgS2FsZW5nIiw5LCJHdWRlZyBraGFzIFlvZ3lha2FydGEgZGFsYW0ga2VtYXNhbiBrYWxlbmciLG51bGwsNDUwMDAsMSwiMjAyNS0wNi0yMCAxNjo0MTo1MCIsIjIwMjUtMDYtMjAgMTY6NDE6NTAiLCJNYWthbmFuIEtoYXMiLDI1LDVdLFs5LCJLZXJpcGlrIFRlbXBlIiw3LCJLZXJpcGlrIHRlbXBlIHJlbnlhaCBraGFzIFlvZ3lha2FydGEiLG51bGwsMTIwMDAsMSwiMjAyNS0wNi0yMCAxNjowNDoxMSIsIjIwMjUtMDYtMjAgMTY6MDQ6MTEiLCJLZXJpcGlrICYgQ2FtaWxhbiIsNTAsOF0sWzgsIkt1ZSBOYXN0YXIiLDYsIkt1ZSBuYXN0YXIgbGVtYnV0IGRlbmdhbiBpc2lhbiBuYW5hcyIsbnVsbCw4MDAwLDEsIjIwMjUtMDYtMjAgMTY6MDI6NTYiLCIyMDI1LTA2LTIwIDE2OjAyOjU2IiwiUHJvZHVrIEt1ZSBLZXJpbmciLDQwLDVdLFs3LCJPbmRlLW9uZGUiLDUsIkt1ZSBvbmRlLW9uZGUgbWFuaXMgZGVuZ2FuIGlzaSBrYWNhbmcgaGlqYXUiLG51bGwsNTAwMCwxLCIyMDI1LTA2LTIwIDE2OjAxOjA4IiwiMjAyNS0wNi0yMCAxNjowMTowOCIsIlByb2R1ayBCYXNhaCIsMzAsNV0sWzYsIlBha2V0IEdpZnQgQm94IDEwIHBjcyIsNCwiUGFrZXQgZ2lmdCBiZXJpc2kgMTAgYmFrcGlhIG1peCByYXNhIixudWxsLDE1MDAwMCwxLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIlBha2V0IE9sZWgtb2xlaCIsMjAsM11dfSwibWV0YSI6eyJzZXJ2ZWRfYnkiOiJtaW5pZmxhcmUuZGIiLCJkdXJhdGlvbiI6MSwiY2hhbmdlcyI6MCwibGFzdF9yb3dfaWQiOjAsImNoYW5nZWRfZGIiOmZhbHNlLCJzaXplX2FmdGVyIjoxMDY0OTYsInJvd3NfcmVhZCI6NTksInJvd3Nfd3JpdHRlbiI6MH19XQ==',
+      base64Encoded: true
+    }
+  }
+}
+[wrangler-ProxyWorker:info] GET /api/products 200 OK (16ms)
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.responseReceived',
+  params: {
+    requestId: '1',
+    timestamp: 812441.084,
+    type: 'XHR',
+    response: {
+      status: 200,
+      statusText: 'OK',
+      headers: [Object],
+      mimeType: 'application/json',
+      connectionReused: false,
+      connectionId: 0,
+      remotePort: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      encodedDataLength: 0,
+      protocol: 'http/1.1',
+      securityState: 'unknown'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.dataReceived',
+  params: {
+    requestId: '1',
+    timestamp: 812441.084,
+    dataLength: 212,
+    encodedDataLength: 212
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.loadingFinished',
+  params: {
+    requestId: '1',
+    timestamp: 812441.085,
+    encodedDataLength: 212,
+    cfResponse: {
+      body: 'W3sic3VjY2VzcyI6dHJ1ZSwicmVzdWx0cyI6eyJjb2x1bW5zIjpbInRvdGFsIl0sInJvd3MiOltbMTJdXX0sIm1ldGEiOnsic2VydmVkX2J5IjoibWluaWZsYXJlLmRiIiwiZHVyYXRpb24iOjAsImNoYW5nZXMiOjAsImxhc3Rfcm93X2lkIjowLCJjaGFuZ2VkX2RiIjpmYWxzZSwic2l6ZV9hZnRlciI6MTA2NDk2LCJyb3dzX3JlYWQiOjEyLCJyb3dzX3dyaXR0ZW4iOjB9fV0=',
+      base64Encoded: true
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586294468,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000015}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000015, result: { id: '90da978d936ef21f' } }
+<-- POST /api/products
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586306532,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.requestWillBeSent',
+  params: {
+    requestId: '2',
+    loaderId: '',
+    request: {
+      url: 'http://d1/query?resultsFormat=ROWS_AND_COLUMNS',
+      method: 'POST',
+      headers: [Object],
+      mixedContentType: 'blockable',
+      initialPriority: 'VeryLow',
+      referrerPolicy: 'unsafe-url',
+      isLinkPreload: false
+    },
+    timestamp: 812453.15,
+    wallTime: 1750586306.533,
+    initiator: { type: 'script', stack: [Object], lineNumber: 0 },
+    type: 'Fetch'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.responseReceived',
+  params: {
+    requestId: '2',
+    timestamp: 812453.151,
+    type: 'XHR',
+    response: {
+      status: 200,
+      statusText: 'OK',
+      headers: [Object],
+      mimeType: 'application/json',
+      connectionReused: false,
+      connectionId: 0,
+      remotePort: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      encodedDataLength: 0,
+      protocol: 'http/1.1',
+      securityState: 'unknown'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.loadingFinished',
+  params: {
+    requestId: '2',
+    timestamp: 812453.151,
+    encodedDataLength: 207,
+    cfResponse: {
+      body: 'W3sic3VjY2VzcyI6dHJ1ZSwicmVzdWx0cyI6eyJjb2x1bW5zIjpbImlkIl0sInJvd3MiOltbMV1dfSwibWV0YSI6eyJzZXJ2ZWRfYnkiOiJtaW5pZmxhcmUuZGIiLCJkdXJhdGlvbiI6MSwiY2hhbmdlcyI6MCwibGFzdF9yb3dfaWQiOjAsImNoYW5nZWRfZGIiOmZhbHNlLCJzaXplX2FmdGVyIjoxMDY0OTYsInJvd3NfcmVhZCI6MSwicm93c193cml0dGVuIjowfX1d',
+      base64Encoded: true
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.requestWillBeSent',
+  params: {
+    requestId: '3',
+    loaderId: '',
+    request: {
+      url: 'http://d1/execute?resultsFormat=NONE',
+      method: 'POST',
+      headers: [Object],
+      mixedContentType: 'blockable',
+      initialPriority: 'VeryLow',
+      referrerPolicy: 'unsafe-url',
+      isLinkPreload: false
+    },
+    timestamp: 812453.151,
+    wallTime: 1750586306.534,
+    initiator: { type: 'script', stack: [Object], lineNumber: 0 },
+    type: 'Fetch'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.dataReceived',
+  params: {
+    requestId: '2',
+    timestamp: 812453.151,
+    dataLength: 207,
+    encodedDataLength: 207
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.responseReceived',
+  params: {
+    requestId: '3',
+    timestamp: 812453.158,
+    type: 'XHR',
+    response: {
+      status: 200,
+      statusText: 'OK',
+      headers: [Object],
+      mimeType: 'application/json',
+      connectionReused: false,
+      connectionId: 0,
+      remotePort: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      encodedDataLength: 0,
+      protocol: 'http/1.1',
+      securityState: 'unknown'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.dataReceived',
+  params: {
+    requestId: '3',
+    timestamp: 812453.158,
+    dataLength: 178,
+    encodedDataLength: 178
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.loadingFinished',
+  params: {
+    requestId: '3',
+    timestamp: 812453.158,
+    encodedDataLength: 178,
+    cfResponse: {
+      body: 'W3sic3VjY2VzcyI6dHJ1ZSwicmVzdWx0cyI6W10sIm1ldGEiOnsic2VydmVkX2J5IjoibWluaWZsYXJlLmRiIiwiZHVyYXRpb24iOjQsImNoYW5nZXMiOjEsImxhc3Rfcm93X2lkIjoxNCwiY2hhbmdlZF9kYiI6dHJ1ZSwic2l6ZV9hZnRlciI6MTA2NDk2LCJyb3dzX3JlYWQiOjQsInJvd3Nfd3JpdHRlbiI6NH19XQ==',
+      base64Encoded: true
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.requestWillBeSent',
+  params: {
+    requestId: '4',
+    loaderId: '',
+    request: {
+      url: 'http://d1/execute?resultsFormat=NONE',
+      method: 'POST',
+      headers: [Object],
+      mixedContentType: 'blockable',
+      initialPriority: 'VeryLow',
+      referrerPolicy: 'unsafe-url',
+      isLinkPreload: false
+    },
+    timestamp: 812453.158,
+    wallTime: 1750586306.541,
+    initiator: { type: 'script', stack: [Object], lineNumber: 0 },
+    type: 'Fetch'
+  }
+}
+--> POST /api/products [32m200[0m 9ms
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.responseReceived',
+  params: {
+    requestId: '4',
+    timestamp: 812453.159,
+    type: 'XHR',
+    response: {
+      status: 200,
+      statusText: 'OK',
+      headers: [Object],
+      mimeType: 'application/json',
+      connectionReused: false,
+      connectionId: 0,
+      remotePort: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      encodedDataLength: 0,
+      protocol: 'http/1.1',
+      securityState: 'unknown'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.dataReceived',
+  params: {
+    requestId: '4',
+    timestamp: 812453.159,
+    dataLength: 178,
+    encodedDataLength: 178
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.loadingFinished',
+  params: {
+    requestId: '4',
+    timestamp: 812453.159,
+    encodedDataLength: 178,
+    cfResponse: {
+      body: 'W3sic3VjY2VzcyI6dHJ1ZSwicmVzdWx0cyI6W10sIm1ldGEiOnsic2VydmVkX2J5IjoibWluaWZsYXJlLmRiIiwiZHVyYXRpb24iOjEsImNoYW5nZXMiOjEsImxhc3Rfcm93X2lkIjoxNCwiY2hhbmdlZF9kYiI6dHJ1ZSwic2l6ZV9hZnRlciI6MTA2NDk2LCJyb3dzX3JlYWQiOjUsInJvd3Nfd3JpdHRlbiI6M319XQ==',
+      base64Encoded: true
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586306542,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[wrangler-ProxyWorker:info] POST /api/products 200 OK (11ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000016}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000016, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000017}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000017, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000018}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000018, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000019}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000019, result: { id: '90da978d936ef21f' } }
+<-- GET /api/products
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586350591,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.requestWillBeSent',
+  params: {
+    requestId: '5',
+    loaderId: '',
+    request: {
+      url: 'http://d1/query?resultsFormat=ROWS_AND_COLUMNS',
+      method: 'POST',
+      headers: [Object],
+      mixedContentType: 'blockable',
+      initialPriority: 'VeryLow',
+      referrerPolicy: 'unsafe-url',
+      isLinkPreload: false
+    },
+    timestamp: 812497.208,
+    wallTime: 1750586350.591,
+    initiator: { type: 'script', stack: [Object], lineNumber: 0 },
+    type: 'Fetch'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.responseReceived',
+  params: {
+    requestId: '5',
+    timestamp: 812497.215,
+    type: 'XHR',
+    response: {
+      status: 200,
+      statusText: 'OK',
+      headers: [Object],
+      mimeType: 'application/json',
+      connectionReused: false,
+      connectionId: 0,
+      remotePort: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      encodedDataLength: 0,
+      protocol: 'http/1.1',
+      securityState: 'unknown'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.dataReceived',
+  params: {
+    requestId: '5',
+    timestamp: 812497.215,
+    dataLength: 1771,
+    encodedDataLength: 1771
+  }
+}
+--> GET /api/products [32m200[0m 7ms
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.loadingFinished',
+  params: {
+    requestId: '5',
+    timestamp: 812497.215,
+    encodedDataLength: 1771,
+    cfResponse: {
+      body: 'W3sic3VjY2VzcyI6dHJ1ZSwicmVzdWx0cyI6eyJjb2x1bW5zIjpbImlkIiwibmFtZSIsImNhdGVnb3J5X2lkIiwiZGVzY3JpcHRpb24iLCJpbWFnZV91cmwiLCJwcmljZSIsImlzX2FjdGl2ZSIsImNyZWF0ZWRfYXQiLCJ1cGRhdGVkX2F0IiwiY2F0ZWdvcnlfbmFtZSIsImN1cnJlbnRfc3RvY2siLCJtaW5fc3RvY2siXSwicm93cyI6W1syLCJCYWtwaWEgUGF0aG9rIENva2xhdCIsMSwiQmFrcGlhIG9yaWdpbmFsIGRlbmdhbiBpc2lhbiBjb2tsYXQiLG51bGwsMjcwMDAsMSwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIjIwMjUtMDYtMjAgMTI6MzI6NTMiLCJCYWtwaWEgS2xhc2lrIiwxMDAsMTBdLFsxLCJCYWtwaWEgUGF0aG9rIE9yaWdpbmFsIiwxLCJCYWtwaWEgb3JpZ2luYWwgZGVuZ2FuIGlzaWFuIGthY2FuZyBoaWphdSIsbnVsbCwyNTAwMCwxLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIkJha3BpYSBLbGFzaWsiLDEwMCwxMF0sWzQsIkJha3BpYSBQcmVtaXVtIER1cmlhbiIsMiwiQmFrcGlhIHByZW1pdW0gZGVuZ2FuIGlzaWFuIGR1cmlhbiBhc2xpIixudWxsLDQwMDAwLDEsIjIwMjUtMDYtMjAgMTI6MzI6NTMiLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiQmFrcGlhIFByZW1pdW0iLDMwLDVdLFszLCJCYWtwaWEgUHJlbWl1bSBLZWp1IiwyLCJCYWtwaWEgcHJlbWl1bSBkZW5nYW4gaXNpYW4ga2VqdSBiZXJrdWFsaXRhcyIsbnVsbCwzNTAwMCwxLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIkJha3BpYSBQcmVtaXVtIiw1MCw1XSxbMTIsIkNPS0VMQVQiLDcsIkhERkRIIixudWxsLDEwMDAwMCwxLCIyMDI1LTA2LTIxIDExOjUxOjM4IiwiMjAyNS0wNi0yMSAxMTo1MTozOCIsIktlcmlwaWsgJiBDYW1pbGFuIiwwLDVdLFsxMSwiR3VkZWcgS2FsZW5nIiw5LCJHdWRlZyBraGFzIFlvZ3lha2FydGEgZGFsYW0ga2VtYXNhbiBrYWxlbmciLG51bGwsNDUwMDAsMSwiMjAyNS0wNi0yMCAxNjo0MTo1MCIsIjIwMjUtMDYtMjAgMTY6NDE6NTAiLCJNYWthbmFuIEtoYXMiLDI1LDVdLFs5LCJLZXJpcGlrIFRlbXBlIiw3LCJLZXJpcGlrIHRlbXBlIHJlbnlhaCBraGFzIFlvZ3lha2FydGEiLG51bGwsMTIwMDAsMSwiMjAyNS0wNi0yMCAxNjowNDoxMSIsIjIwMjUtMDYtMjAgMTY6MDQ6MTEiLCJLZXJpcGlrICYgQ2FtaWxhbiIsNTAsOF0sWzgsIkt1ZSBOYXN0YXIiLDYsIkt1ZSBuYXN0YXIgbGVtYnV0IGRlbmdhbiBpc2lhbiBuYW5hcyIsbnVsbCw4MDAwLDEsIjIwMjUtMDYtMjAgMTY6MDI6NTYiLCIyMDI1LTA2LTIwIDE2OjAyOjU2IiwiUHJvZHVrIEt1ZSBLZXJpbmciLDQwLDVdLFs3LCJPbmRlLW9uZGUiLDUsIkt1ZSBvbmRlLW9uZGUgbWFuaXMgZGVuZ2FuIGlzaSBrYWNhbmcgaGlqYXUiLG51bGwsNTAwMCwxLCIyMDI1LTA2LTIwIDE2OjAxOjA4IiwiMjAyNS0wNi0yMCAxNjowMTowOCIsIlByb2R1ayBCYXNhaCIsMzAsNV0sWzYsIlBha2V0IEdpZnQgQm94IDEwIHBjcyIsNCwiUGFrZXQgZ2lmdCBiZXJpc2kgMTAgYmFrcGlhIG1peCByYXNhIixudWxsLDE1MDAwMCwxLCIyMDI1LTA2LTIwIDEyOjMyOjUzIiwiMjAyNS0wNi0yMCAxMjozMjo1MyIsIlBha2V0IE9sZWgtb2xlaCIsMjAsM11dfSwibWV0YSI6eyJzZXJ2ZWRfYnkiOiJtaW5pZmxhcmUuZGIiLCJkdXJhdGlvbiI6NCwiY2hhbmdlcyI6MCwibGFzdF9yb3dfaWQiOjAsImNoYW5nZWRfZGIiOmZhbHNlLCJzaXplX2FmdGVyIjoxMDY0OTYsInJvd3NfcmVhZCI6NjQsInJvd3Nfd3JpdHRlbiI6MH19XQ==',
+      base64Encoded: true
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.requestWillBeSent',
+  params: {
+    requestId: '6',
+    loaderId: '',
+    request: {
+      url: 'http://d1/query?resultsFormat=ROWS_AND_COLUMNS',
+      method: 'POST',
+      headers: [Object],
+      mixedContentType: 'blockable',
+      initialPriority: 'VeryLow',
+      referrerPolicy: 'unsafe-url',
+      isLinkPreload: false
+    },
+    timestamp: 812497.215,
+    wallTime: 1750586350.598,
+    initiator: { type: 'script', stack: [Object], lineNumber: 0 },
+    type: 'Fetch'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.responseReceived',
+  params: {
+    requestId: '6',
+    timestamp: 812497.216,
+    type: 'XHR',
+    response: {
+      status: 200,
+      statusText: 'OK',
+      headers: [Object],
+      mimeType: 'application/json',
+      connectionReused: false,
+      connectionId: 0,
+      remotePort: 0,
+      fromDiskCache: false,
+      fromServiceWorker: false,
+      encodedDataLength: 0,
+      protocol: 'http/1.1',
+      securityState: 'unknown'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.dataReceived',
+  params: {
+    requestId: '6',
+    timestamp: 812497.216,
+    dataLength: 212,
+    encodedDataLength: 212
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 423708673,
+    timestamp: 1750586350598,
+    stackTrace: { callFrames: [Array] }
+  }
+}
+[wrangler-ProxyWorker:info] GET /api/products 200 OK (13ms)
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Network.loadingFinished',
+  params: {
+    requestId: '6',
+    timestamp: 812497.216,
+    encodedDataLength: 212,
+    cfResponse: {
+      body: 'W3sic3VjY2VzcyI6dHJ1ZSwicmVzdWx0cyI6eyJjb2x1bW5zIjpbInRvdGFsIl0sInJvd3MiOltbMTNdXX0sIm1ldGEiOnsic2VydmVkX2J5IjoibWluaWZsYXJlLmRiIiwiZHVyYXRpb24iOjAsImNoYW5nZXMiOjAsImxhc3Rfcm93X2lkIjowLCJjaGFuZ2VkX2RiIjpmYWxzZSwic2l6ZV9hZnRlciI6MTA2NDk2LCJyb3dzX3JlYWQiOjEzLCJyb3dzX3dyaXR0ZW4iOjB9fV0=',
+      base64Encoded: true
+    }
+  }
+}
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000020}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000020, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000021}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000021, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000022}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000022, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000023}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000023, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000024}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000024, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000025}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000025, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000026}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000026, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000027}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000027, result: { id: '90da978d936ef21f' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000028}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000028, result: { id: '90da978d936ef21f' } }
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (1ms)
+RemoteRuntimeController teardown beginning...
+RemoteRuntimeController teardown complete
+⎔ Reloading local server...
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/pause 204 No Content (0ms)
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.discardConsoleEntries","id":100000029}
+[InspectorProxyWorker] handleProxyControllerIncomingMessage {"type":"reloadStart"}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000029, result: {} }
+workerd/io/worker-entrypoint.c++:400: info: exception = kj/compat/http.c++:3919: disconnected: WebSocket was aborted
+stack: 102b073a7 1029581b4 10295858f 1043eb667 1027c962c 1027c9d70
+[InspectorProxyWorker] RUNTIME WEBSOCKET CLOSED 1006 WebSocket disconnected without sending Close frame.
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mworkerd/server/server.c++:3982: info: Inspector is listening[0m
+
+
+[wrangler-ProxyWorker:info] GET /cdn-cgi/ProxyWorker/play 204 No Content (0ms)
+[InspectorProxyWorker] handleProxyControllerIncomingMessage {"type":"reloadComplete","proxyData":{"userWorkerUrl":{"protocol":"http:","hostname":"127.0.0.1","port":"64602"},"userWorkerInspectorUrl":{"protocol":"ws:","hostname":"127.0.0.1","port":"64028","pathname":"/core:user:bakpia-stok-api"},"userWorkerInnerUrlOverrides":{"protocol":"http:"},"headers":{"MF-Proxy-Shared-Secret":"83952755-4557-4bb2-a392-d7f6aa22052f"},"liveReload":false,"proxyLogsToController":false,"internalDurableObjects":[],"entrypointAddresses":{"default":{"host":"127.0.0.1","port":64032}}}}
+[InspectorProxyWorker] reconnectRuntimeWebSocket
+[InspectorProxyWorker] NEW RUNTIME WEBSOCKET http://127.0.0.1:64028/core:user:bakpia-stok-api
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mworkerd/server/server.c++:1340: info: Inspector client attaching [core:user:bakpia-stok-api][0m
+
+
+[InspectorProxyWorker] RUNTIME WEBSOCKET OPENED
+[InspectorProxyWorker] SEND TO DEVTOOLS {"method":"Runtime.executionContextsCleared"}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Runtime.executionContextCreated',
+  params: {
+    context: {
+      id: 262035201,
+      origin: '',
+      name: 'Worker',
+      uniqueId: '8464507437030864767.-3678327144210276139'
+    }
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000030, result: {} }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Debugger.enable","id":100000031}
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.enable","id":100000030}
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Network.enable","id":100000032}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '3',
+    url: 'file:///Users/ipoy/Documents/Kurniasari%20web/bakpia-stok-app/backend/.wrangler/tmp/dev-Gt9Gjg/index.js',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 5391,
+    endColumn: 117,
+    executionContextId: 262035201,
+    hash: '91a785d3cccb0792ea7cdb26445478c6b1851056096833bb11efb305ddef7e0f',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: 'index.js.map',
+    hasSourceURL: true,
+    isModule: true,
+    length: 160195,
+    scriptLanguage: 'JavaScript',
+    embedderName: 'index.js'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  method: 'Debugger.scriptParsed',
+  params: {
+    scriptId: '4',
+    url: 'cloudflare-internal:d1-api',
+    startLine: 0,
+    startColumn: 0,
+    endLine: 390,
+    endColumn: 0,
+    executionContextId: 262035201,
+    hash: 'f4316a8ee94643f57695b89a32ed3b9c709663174472eaaf27b74b5813eff99e',
+    buildId: '',
+    isLiveEdit: false,
+    sourceMapURL: '',
+    hasSourceURL: false,
+    isModule: true,
+    length: 15076,
+    scriptLanguage: 'JavaScript',
+    embedderName: 'cloudflare-internal:d1-api'
+  }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE {
+  id: 100000031,
+  result: { debuggerId: '357289123215287105.-6400146398949353063' }
+}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000032, method: 'Network.enable', result: {} }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000033}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000033, result: { id: '5b67fd39edd2cdee' } }
+[InspectorProxyWorker] SEND TO RUNTIME {"method":"Runtime.getIsolateId","id":100000034}
+[InspectorProxyWorker] RUNTIME INCOMING MESSAGE { id: 100000034, result: { id: '5b67fd39edd2cdee' } }
+🪵  Logs were written to "/Users/ipoy/.wrangler/logs/wrangler-2025-06-22_09-56-22_302.log"

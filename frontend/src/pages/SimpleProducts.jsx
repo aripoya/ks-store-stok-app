@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+// Use the fixed API services instead of broken environment variable logic
+import { productsAPI } from '../services/api';
 
 /**
  * A very simple Products component to test API connectivity without the complexity
@@ -15,99 +17,58 @@ export default function SimpleProducts() {
     envVars: {}
   });
 
-  // Get API base URL from environment variable or fallback
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-
   useEffect(() => {
-    // Show environment variables for debugging
-    const envVars = {
-      VITE_API_URL: import.meta.env.VITE_API_URL || 'not set',
-      API_BASE_URL: API_BASE_URL,
-      NODE_ENV: import.meta.env.MODE || 'unknown'
-    };
-    setApiDetails(prev => ({ ...prev, envVars }));
-    
-    const fetchProducts = async () => {
+    async function fetchProducts() {
+      console.log('🔍 SimpleProducts: Starting fetchProducts with proper API service...');
+      setLoading(true);
+      setError(null);
+
       try {
-        const url = `${API_BASE_URL}/api/products`;
-        setApiDetails(prev => ({ ...prev, url }));
-        console.log('SimpleProducts: Fetching from', url);
-
-        // Attempt the fetch with detailed error handling
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-        try {
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json'
-            },
-            mode: 'cors', // Try with explicit CORS mode
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-          
-          // Log response details
-          const responseStatus = `${response.status} ${response.statusText}`;
-          const responseHeaders = {};
-          response.headers.forEach((value, key) => {
-            responseHeaders[key] = value;
-          });
-          
-          setApiDetails(prev => ({ 
-            ...prev, 
-            responseStatus, 
-            responseHeaders: JSON.stringify(responseHeaders, null, 2)
-          }));
-          
-          console.log('SimpleProducts: Response status:', responseStatus);
-          console.log('SimpleProducts: Response headers:', responseHeaders);
-
-          if (!response.ok) {
-            // Try to parse error response if possible
-            try {
-              const errorData = await response.json();
-              throw new Error(`API Error ${response.status}: ${errorData.error || errorData.message || response.statusText}`);
-            } catch (parseErr) {
-              throw new Error(`API Error ${response.status}: ${response.statusText}`);
-            }
-          }
-          
-          const data = await response.json();
-          console.log('SimpleProducts: Received data', data);
-          
-          if (data && Array.isArray(data.products)) {
-            setProducts(data.products);
-          } else if (Array.isArray(data)) {
-            // Handle case where API returns array directly
-            setProducts(data);
-          } else {
-            throw new Error('Invalid data format: Expected products array');
-          }
-        } catch (fetchErr) {
-          clearTimeout(timeoutId);
-          // Handle different fetch error types
-          if (fetchErr.name === 'AbortError') {
-            throw new Error('Request timed out after 10 seconds');
-          }
-          throw fetchErr;
+        // Use the fixed productsAPI service with pagination
+        const response = await productsAPI.getAll({ page: 1, limit: 20 });
+        console.log('✅ SimpleProducts: Products API success, received:', response?.data?.length || 0);
+        
+        if (response?.data && Array.isArray(response.data)) {
+          setProducts(response.data);
+        } else {
+          console.log('⚠️ SimpleProducts: No products data returned, setting empty array');
+          setProducts([]);
         }
       } catch (err) {
-        console.error('SimpleProducts: Error fetching products', err);
+        console.error('❌ SimpleProducts: Products API error:', err);
         setError(err.message);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
-    };
-    
+    }
+
     fetchProducts();
-  }, [API_BASE_URL]);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-6">Simple Products Test</h1>
+        <p>Loading products...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-6">Simple Products Test</h1>
+        <div className="p-4 bg-red-50 border border-red-200 rounded">
+          <p className="text-red-600">Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Simple Products Test</h1>
+      <h1 className="text-3xl font-bold mb-6">Simple Products Test</h1>
       
       {/* API diagnostic information */}
       <div className="mb-6 p-4 border rounded bg-gray-50">
@@ -136,40 +97,27 @@ export default function SimpleProducts() {
         </div>
       </div>
       
-      {/* Loading state */}
-      {loading && (
-        <div className="p-4 border rounded bg-blue-50 text-blue-700 mb-4">
-          <p className="font-medium">Loading products from API...</p>
-        </div>
-      )}
-      
-      {/* Error state */}
-      {error && (
-        <div className="p-4 border rounded bg-red-50 text-red-700 mb-4">
-          <h3 className="font-medium">API Error</h3>
-          <p>{error}</p>
-        </div>
-      )}
-      
-      {/* Products display */}
-      {!loading && !error && (
-        <div>
-          <div className="p-4 border rounded bg-green-50 text-green-700 mb-4">
-            <p className="font-medium">Successfully loaded {products.length} products</p>
+      <div className="mb-4">
+        <p className="text-lg">✅ Successfully loaded {products.length} products</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => (
+          <div key={product.id} className="p-4 border rounded-lg bg-white shadow">
+            <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+            <p className="text-gray-600 mb-2">Price: Rp {product.price?.toLocaleString('id-ID')}</p>
+            <p className="text-sm text-gray-500">Stock: {product.stock || 0}</p>
+            <p className="text-xs text-gray-400">ID: {product.id}</p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map(product => (
-              <div key={product.id} className="border p-4 rounded-md hover:shadow transition-shadow">
-                <h3 className="font-medium">{product.name}</h3>
-                <p className="text-sm text-gray-500">Category: {product.category_name}</p>
-                <p className="text-sm">Price: Rp {product.price.toLocaleString()}</p>
-                <p className="text-sm">Stock: {product.current_stock || 'N/A'}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        ))}
+      </div>
+      
+      <div className="mt-8 p-4 bg-blue-50 rounded">
+        <h3 className="font-semibold mb-2">Debug Info</h3>
+        <p>✅ Using centralized API service from services/api.js</p>
+        <p>✅ No more broken VITE_API_URL dependencies</p>
+        <p>Total products: {products.length}</p>
+      </div>
     </div>
   );
 }

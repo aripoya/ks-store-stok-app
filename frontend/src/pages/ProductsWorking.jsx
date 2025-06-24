@@ -49,7 +49,7 @@ export default function ProductsWorking() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   
-  const { products, loading, error, pagination, setPage, setSearch, setCategoryId, fetchProducts, addProduct, updateProduct, deleteProduct } = useProducts({
+  const { products, loading, error, pagination, setPage, setSearch, setCategoryId, fetchProducts, addProduct, updateProduct, deleteProduct, refresh } = useProducts({
     search: debouncedSearchTerm,
     categoryId: selectedCategoryId
   });
@@ -71,20 +71,38 @@ export default function ProductsWorking() {
     description: '',
     price: '',
     stock: '',
-    category_id: ''
+    category_id: '',
+    barcode: ''
   });
 
   // Handle Add Product
   const handleAddProduct = async () => {
     try {
-      await addProduct(formData);
+      // Prepare data payload to match backend POST endpoint expectations
+      const addPayload = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price ? parseInt(formData.price) : null,
+        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        barcode: formData.barcode || null,
+        stock: formData.stock ? parseInt(formData.stock) : null,
+        image_url: null // API requires this field
+      };
+
+      console.log('🚀 ADD PRODUCT PAYLOAD:', addPayload);
+      
+      // Use addProduct from useProducts hook for optimistic update
+      await addProduct(addPayload);
+      
       setShowAddDialog(false);
-      setFormData({ name: '', description: '', price: '', stock: '', category_id: '' });
+      setFormData({ name: '', description: '', price: '', stock: '', category_id: '', barcode: '' });
+      
       toast({
         title: "Success",
         description: "Product added successfully!",
       });
     } catch (error) {
+      console.error('🚨 ADD PRODUCT ERROR:', error);
       toast({
         title: "Error",
         description: "Failed to add product",
@@ -96,15 +114,29 @@ export default function ProductsWorking() {
   // Handle Edit Product
   const handleEditProduct = async () => {
     try {
-      await updateProduct(selectedProduct.id, formData);
+      // Prepare data payload to match backend PUT endpoint expectations
+      const updatePayload = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price ? parseInt(formData.price) : null,
+        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        barcode: formData.barcode || null,
+        stock: formData.stock ? parseInt(formData.stock) : null,
+        image_url: null // Add image_url field expected by backend
+      };
+      
+      await updateProduct(selectedProduct.id, updatePayload);
       setShowEditDialog(false);
       setSelectedProduct(null);
-      setFormData({ name: '', description: '', price: '', stock: '', category_id: '' });
+      setFormData({ name: '', description: '', price: '', stock: '', category_id: '', barcode: '' });
+      // Refresh products list to show updated product
+      await refresh();
       toast({
         title: "Success",
         description: "Product updated successfully!",
       });
     } catch (error) {
+      console.error('🚨 UPDATE ERROR:', error);
       toast({
         title: "Error",
         description: "Failed to update product",
@@ -119,6 +151,8 @@ export default function ProductsWorking() {
       await deleteProduct(selectedProduct.id);
       setShowDeleteDialog(false);
       setSelectedProduct(null);
+      // Refresh products list to remove deleted product
+      await refresh();
       toast({
         title: "Success",
         description: "Product deleted successfully!",
@@ -134,15 +168,22 @@ export default function ProductsWorking() {
 
   // Open Edit Dialog
   const openEditDialog = (product) => {
+    console.log('🎯 EDIT BUTTON CLICKED!', product);
+    console.log('🎯 Product data:', product);
+    console.log('🎯 Setting showEditDialog to true');
+    
     setSelectedProduct(product);
     setFormData({
-      name: product.name,
-      description: product.description,
-      price: product.price.toString(),
-      stock: product.stock.toString(),
-      category_id: product.category_id.toString()
+      name: product.name || '',
+      description: product.description || '',
+      price: product.price ? product.price.toString() : '',
+      stock: product.stock ? product.stock.toString() : '',
+      category_id: product.category_id ? product.category_id.toString() : '',
+      barcode: product.barcode || ''
     });
     setShowEditDialog(true);
+    
+    console.log('🎯 Edit dialog state should now be open');
   };
 
   // Open Delete Dialog
@@ -216,7 +257,12 @@ export default function ProductsWorking() {
                   <div>
                     <CardTitle className="text-lg">{product.name}</CardTitle>
                     <Badge variant="secondary" className="mt-1">
-                      {categories?.find(c => c.id === product.category_id)?.name || 'Unknown'}
+                      {(() => {
+                        // Ensure both IDs are numbers for proper comparison
+                        const productCategoryId = parseInt(product.category_id);
+                        const foundCategory = categories?.find(c => parseInt(c.id) === productCategoryId);
+                        return foundCategory?.name || 'Unknown';
+                      })()}
                     </Badge>
                   </div>
                   <div className="flex gap-2">
@@ -321,10 +367,29 @@ export default function ProductsWorking() {
               <Label htmlFor="stock">Stock</Label>
               <Input 
                 id="stock"
+                name="stock"
                 type="number" 
-                value={formData.stock} 
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })} 
+                min="0"
+                step="1"
+                value={formData.stock || ''} 
+                onChange={(e) => {
+                  const value = e.target.value;
+                  console.log('Stock input changed:', value);
+                  setFormData({ ...formData, stock: value });
+                }} 
                 placeholder="Stock quantity"
+                className="w-full"
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <Label htmlFor="barcode">Barcode</Label>
+              <Input 
+                id="barcode"
+                type="text" 
+                value={formData.barcode} 
+                onChange={(e) => setFormData({ ...formData, barcode: e.target.value })} 
+                placeholder="Product barcode"
               />
             </div>
             <div>
@@ -392,10 +457,29 @@ export default function ProductsWorking() {
               <Label htmlFor="edit-stock">Stock</Label>
               <Input 
                 id="edit-stock"
+                name="edit-stock"
                 type="number" 
-                value={formData.stock} 
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })} 
+                min="0"
+                step="1"
+                value={formData.stock || ''} 
+                onChange={(e) => {
+                  const value = e.target.value;
+                  console.log('Edit stock input changed:', value);
+                  setFormData({ ...formData, stock: value });
+                }} 
                 placeholder="Stock quantity"
+                className="w-full"
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-barcode">Barcode</Label>
+              <Input 
+                id="edit-barcode"
+                type="text" 
+                value={formData.barcode} 
+                onChange={(e) => setFormData({ ...formData, barcode: e.target.value })} 
+                placeholder="Product barcode"
               />
             </div>
             <div>

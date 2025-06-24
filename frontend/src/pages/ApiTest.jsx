@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-
-// Use the environment variable when available, otherwise use a relative path for local dev with proxy
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+// Use the fixed API services instead of broken environment variable logic
+import { categoriesAPI, productsAPI } from '../services/api';
 
 export default function ApiTest() {
   const [categories, setCategories] = useState([]);
@@ -14,21 +13,23 @@ export default function ApiTest() {
   // Test fetching categories
   useEffect(() => {
     async function fetchCategories() {
+      console.log('🔍 ApiTest: Starting fetchCategories with proper API service...');
       setCategoriesLoading(true);
+      setCategoriesError(null);
+
       try {
-        const url = `${API_BASE_URL}/api/categories`;
-        console.log('Test fetch categories from:', url);
-        const response = await fetch(url);
+        // Use the fixed categoriesAPI service
+        const data = await categoriesAPI.getAll();
+        console.log('✅ ApiTest: Categories API success, received:', data?.length || 0);
         
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
+        if (data && Array.isArray(data)) {
+          setCategories(data);
+        } else {
+          console.log('⚠️ ApiTest: No categories data returned, setting empty array');
+          setCategories([]);
         }
-        
-        const data = await response.json();
-        setCategories(data);
-        setCategoriesError(null);
       } catch (err) {
-        console.error('Failed to fetch categories:', err);
+        console.error('❌ ApiTest: Categories API error:', err);
         setCategoriesError(err.message);
         setCategories([]);
       } finally {
@@ -42,28 +43,23 @@ export default function ApiTest() {
   // Test fetching products
   useEffect(() => {
     async function fetchProducts() {
+      console.log('🔍 ApiTest: Starting fetchProducts with proper API service...');
       setProductsLoading(true);
+      setProductsError(null);
+
       try {
-        const url = `${API_BASE_URL}/api/products`;
-        console.log('Test fetch products from:', url);
-        const response = await fetch(url);
+        // Use the fixed productsAPI service with pagination
+        const response = await productsAPI.getAll({ page: 1, limit: 10 });
+        console.log('✅ ApiTest: Products API success, received:', response?.data?.length || 0);
         
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        // Handle different response formats
-        if (Array.isArray(data)) {
-          setProducts(data);
-        } else if (data && data.products && Array.isArray(data.products)) {
-          setProducts(data.products);
+        if (response?.data && Array.isArray(response.data)) {
+          setProducts(response.data);
         } else {
-          throw new Error('Invalid API response format');
+          console.log('⚠️ ApiTest: No products data returned, setting empty array');
+          setProducts([]);
         }
-        setProductsError(null);
       } catch (err) {
-        console.error('Failed to fetch products:', err);
+        console.error('❌ ApiTest: Products API error:', err);
         setProductsError(err.message);
         setProducts([]);
       } finally {
@@ -75,57 +71,56 @@ export default function ApiTest() {
   }, []);
 
   return (
-    <div className="container p-4">
-      <h1 className="text-2xl font-bold mb-6">API Connection Test</h1>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">API Test Page</h1>
+      
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">Environment Variables</h2>
-        <div className="bg-gray-100 p-3 rounded">
-          <p>VITE_API_URL: {import.meta.env.VITE_API_URL || '(not set)'}</p>
-          <p>API_BASE_URL: {API_BASE_URL || '(empty string)'}</p>
-        </div>
+        <h2 className="text-xl font-semibold mb-4">Categories Test</h2>
+        {categoriesLoading ? (
+          <p>Loading categories...</p>
+        ) : categoriesError ? (
+          <p className="text-red-600">Error: {categoriesError}</p>
+        ) : (
+          <div>
+            <p className="mb-2">✅ Categories loaded successfully: {categories.length} items</p>
+            <div className="grid gap-2">
+              {categories.slice(0, 3).map((category) => (
+                <div key={category.id} className="p-2 border rounded bg-gray-50">
+                  {category.name} (ID: {category.id})
+                </div>
+              ))}
+              {categories.length > 3 && <p className="text-sm text-gray-600">... and {categories.length - 3} more</p>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Products Test</h2>
+        {productsLoading ? (
+          <p>Loading products...</p>
+        ) : productsError ? (
+          <p className="text-red-600">Error: {productsError}</p>
+        ) : (
+          <div>
+            <p className="mb-2">✅ Products loaded successfully: {products.length} items</p>
+            <div className="grid gap-2">
+              {products.slice(0, 3).map((product) => (
+                <div key={product.id} className="p-2 border rounded bg-gray-50">
+                  {product.name} - Rp {product.price?.toLocaleString('id-ID')} (ID: {product.id})
+                </div>
+              ))}
+              {products.length > 3 && <p className="text-sm text-gray-600">... and {products.length - 3} more</p>}
+            </div>
+          </div>
+        )}
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border p-4 rounded-md">
-          <h2 className="text-xl font-semibold mb-4">Categories Test</h2>
-          {categoriesLoading ? (
-            <p>Loading categories...</p>
-          ) : categoriesError ? (
-            <div className="text-red-500">
-              <p>Error: {categoriesError}</p>
-            </div>
-          ) : (
-            <div>
-              <p className="mb-2 text-green-600 font-medium">✓ Successfully fetched {categories.length} categories</p>
-              <ul className="list-disc pl-5">
-                {categories.map(category => (
-                  <li key={category.id}>{category.name}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-        
-        <div className="border p-4 rounded-md">
-          <h2 className="text-xl font-semibold mb-4">Products Test</h2>
-          {productsLoading ? (
-            <p>Loading products...</p>
-          ) : productsError ? (
-            <div className="text-red-500">
-              <p>Error: {productsError}</p>
-            </div>
-          ) : (
-            <div>
-              <p className="mb-2 text-green-600 font-medium">✓ Successfully fetched {products.length} products</p>
-              <ul className="list-disc pl-5">
-                {products.slice(0, 5).map(product => (
-                  <li key={product.id}>{product.name}</li>
-                ))}
-                {products.length > 5 && <li>...and {products.length - 5} more</li>}
-              </ul>
-            </div>
-          )}
-        </div>
+      <div className="p-4 bg-blue-50 rounded">
+        <h3 className="font-semibold mb-2">Debug Info</h3>
+        <p>✅ Using centralized API services from services/api.js</p>
+        <p>✅ No more broken VITE_API_URL dependencies</p>
+        <p>Categories: {categories.length} | Products: {products.length}</p>
       </div>
     </div>
   );

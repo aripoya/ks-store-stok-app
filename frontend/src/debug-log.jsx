@@ -1,93 +1,98 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+// Use the fixed API services instead of broken environment variable logic
+import { categoriesAPI } from './services/api';
 
 /**
- * Component to debug API connections and responses
+ * Debug component for API testing - should be removed from production builds
+ * This component is for development debugging only
  */
 export default function DebugLog() {
+  const [logs, setLogs] = useState([]);
+  const [apiTest, setApiTest] = useState({ loading: false, result: null, error: null });
+
+  // Add log entry
+  const addLog = (message, type = 'info') => {
+    const timestamp = new Date().toLocaleTimeString();
+    setLogs(prev => [...prev.slice(-9), { message, type, timestamp }]);
+  };
+
+  // Test backend connection using proper API service
+  const testBackendConnection = async () => {
+    console.log('🔍 DebugLog: Testing backend connection with proper API service...');
+    setApiTest({ loading: true, result: null, error: null });
+    addLog('🔍 Testing backend connection with proper API service...', 'info');
+
+    try {
+      // Use the fixed categoriesAPI service
+      const data = await categoriesAPI.getAll();
+      console.log('✅ DebugLog: API success, received categories:', data?.length || 0);
+      
+      const result = {
+        success: true,
+        categoriesCount: data?.length || 0,
+        sampleCategory: data?.[0]?.name || 'N/A'
+      };
+      
+      setApiTest({ loading: false, result, error: null });
+      addLog(`✅ Backend connection successful! Categories: ${result.categoriesCount}`, 'success');
+    } catch (err) {
+      console.error('❌ DebugLog: API error:', err);
+      setApiTest({ loading: false, result: null, error: err.message });
+      addLog(`❌ Backend connection failed: ${err.message}`, 'error');
+    }
+  };
+
   useEffect(() => {
-    // Log environment variables
-    console.log('=== DEBUG LOG START ===');
-    console.log('Environment Variables:', {
-      NODE_ENV: import.meta.env.NODE_ENV,
-      DEV: import.meta.env.DEV,
-      PROD: import.meta.env.PROD,
-      VITE_API_URL: import.meta.env.VITE_API_URL,
-    });
-    
-    // Test Backend API connection
-    const testBackendConnection = async () => {
-      console.log('Testing backend connection...');
-      try {
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-        console.log('Using API URL:', API_BASE_URL);
-        
-        // Test categories endpoint
-        console.log('Testing categories endpoint...');
-        try {
-          const categoryResponse = await fetch(`${API_BASE_URL}/api/categories`, {
-            headers: { 'Accept': 'application/json' },
-            mode: 'cors'
-          });
-          console.log('Categories Response Status:', categoryResponse.status, categoryResponse.statusText);
-          console.log('Categories Response Headers:', Object.fromEntries([...categoryResponse.headers]));
-          
-          if (categoryResponse.ok) {
-            const categoryData = await categoryResponse.json();
-            console.log('Categories API Response Data:', categoryData);
-          } else {
-            console.error('Categories API Error Response:', await categoryResponse.text());
-          }
-        } catch (catError) {
-          console.error('Categories API Connection Error:', catError);
-        }
-        
-        // Test products endpoint
-        console.log('Testing products endpoint...');
-        try {
-          const productResponse = await fetch(`${API_BASE_URL}/api/products`, {
-            headers: { 'Accept': 'application/json' },
-            mode: 'cors'
-          });
-          console.log('Products Response Status:', productResponse.status, productResponse.statusText);
-          console.log('Products Response Headers:', Object.fromEntries([...productResponse.headers]));
-          
-          if (productResponse.ok) {
-            const productData = await productResponse.json();
-            console.log('Products API Response Data:', productData);
-          } else {
-            console.error('Products API Error Response:', await productResponse.text());
-          }
-        } catch (prodError) {
-          console.error('Products API Connection Error:', prodError);
-        }
-        
-        console.log('All API tests complete');
-      } catch (error) {
-        console.error('General API Testing Error:', error);
-      }
-      console.log('=== DEBUG LOG END ===');
-    };
-    
-    // Run tests with a slight delay to allow React to render
-    setTimeout(testBackendConnection, 1000);
-    
-    // Also test useProducts hook data flow
-    console.log('Registering network request interceptor for debugging...');
-    const originalFetch = window.fetch;
-    window.fetch = async function(...args) {
-      const url = args[0];
-      console.log(`🔍 Intercepted fetch request to: ${url}`);
-      const result = await originalFetch.apply(this, args);
-      console.log(`✅ Fetch response from ${url}: ${result.status} ${result.statusText}`);
-      return result;
-    };
-    
-    // Cleanup interceptor when component unmounts
-    return () => {
-      window.fetch = originalFetch;
-      console.log('Removed network request interceptor');
-    };
+    addLog('🚀 DebugLog component mounted (development only)', 'info');
+    addLog('✅ Using centralized API services from services/api.js', 'success');
+    addLog('✅ No more broken VITE_API_URL dependencies', 'success');
   }, []);
-  
-  return null; // This component doesn't render anything
+
+  // Don't render in production - use safer check to avoid runtime crash
+  if (process.env.NODE_ENV === 'production') {
+    return null;
+  }
+
+  return (
+    <div className="fixed bottom-4 right-4 w-80 max-h-96 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden z-50">
+      <div className="bg-gray-100 px-3 py-2 border-b">
+        <h3 className="text-sm font-semibold">Debug Log (Dev Only)</h3>
+      </div>
+      
+      <div className="p-3">
+        <button
+          onClick={testBackendConnection}
+          disabled={apiTest.loading}
+          className="w-full mb-3 px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:opacity-50"
+        >
+          {apiTest.loading ? 'Testing...' : 'Test Backend Connection'}
+        </button>
+        
+        {apiTest.result && (
+          <div className="mb-3 p-2 bg-green-50 border border-green-200 rounded text-sm">
+            <p>✅ Categories: {apiTest.result.categoriesCount}</p>
+            <p>Sample: {apiTest.result.sampleCategory}</p>
+          </div>
+        )}
+        
+        {apiTest.error && (
+          <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-sm">
+            <p className="text-red-600">❌ Error: {apiTest.error}</p>
+          </div>
+        )}
+        
+        <div className="max-h-40 overflow-y-auto">
+          {logs.map((log, index) => (
+            <div key={index} className={`text-xs mb-1 ${
+              log.type === 'error' ? 'text-red-600' : 
+              log.type === 'success' ? 'text-green-600' : 
+              'text-gray-600'
+            }`}>
+              <span className="text-gray-400">{log.timestamp}</span> {log.message}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
