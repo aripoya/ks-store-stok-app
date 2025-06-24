@@ -1,16 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { API_BASE_URL } from '../config';
-
-// Use the environment variable when available, otherwise use a relative path for local dev with proxy
-// This ensures our code works in both development and production environments
-const EFFECTIVE_API_URL = import.meta.env.VITE_API_URL || API_BASE_URL;
-
-// Log API URL configuration
-console.log('Products hook environment variables:', {
-  VITE_API_URL: import.meta.env.VITE_API_URL,
-  API_BASE_URL: API_BASE_URL,
-  EFFECTIVE_API_URL: EFFECTIVE_API_URL,
-});
+// Use the fixed API service instead of broken environment variable logic
+import { productsAPI } from '../services/api';
 
 /**
  * A hook for fetching and managing product data
@@ -35,20 +25,99 @@ export function useProducts({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
+    page: initialPage,
+    limit: initialLimit,
     total: 0,
-    totalPages: 1
+    totalPages: 0
   });
 
-  // Fallback products data if API fails
-  const localProducts = [
-    { id: 1, name: 'Bakpia Klasik Kacang Hijau', category_id: 1, category_name: 'Bakpia Klasik', price: 45000, current_stock: 50 },
-    { id: 2, name: 'Bakpia Premium Coklat', category_id: 2, category_name: 'Bakpia Premium', price: 65000, current_stock: 25 },
-    { id: 3, name: 'Bakpia Spesial Keju', category_id: 3, category_name: 'Bakpia Spesial', price: 55000, current_stock: 35 },
-    { id: 4, name: 'Paket Oleh-oleh Box Kecil', category_id: 4, category_name: 'Paket Oleh-oleh', price: 85000, current_stock: 15 },
+  // Fallback products data
+  const fallbackProducts = [
+    { 
+      id: 1, 
+      name: 'Bakpia Pathok Klasik', 
+      category_id: 1, 
+      price: 25000, 
+      description: 'Bakpia klasik rasa kacang hijau',
+      barcode: 'BP001',
+      stock: 100
+    },
+    { 
+      id: 2, 
+      name: 'Bakpia Premium Coklat', 
+      category_id: 2, 
+      price: 35000, 
+      description: 'Bakpia premium dengan isian coklat',
+      barcode: 'BP002', 
+      stock: 50
+    }
   ];
-  
+
+  // Fetch products using proper API service
+  const fetchProducts = useCallback(async () => {
+    console.log('🔍 useProducts: Starting fetchProducts with proper API service...', {
+      page, limit, searchTerm, selectedCategory
+    });
+    
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Build query parameters for the API service
+      const params = {
+        page,
+        limit,
+        ...(searchTerm && { search: searchTerm }),
+        ...(selectedCategory && { category_id: selectedCategory })
+      };
+
+      // Use the fixed productsAPI service instead of custom fetch logic
+      const data = await productsAPI.getAll(params);
+      console.log('✅ useProducts: API success, received data:', data);
+      
+      if (data && data.products && Array.isArray(data.products)) {
+        // Expected API format with pagination
+        setProducts(data.products);
+        setPagination({
+          page: data.page || page,
+          limit: data.limit || limit,
+          total: data.total || data.products.length,
+          totalPages: data.totalPages || Math.ceil((data.total || data.products.length) / limit)
+        });
+      } else if (Array.isArray(data)) {
+        // Fallback for array format
+        setProducts(data);
+        setPagination({
+          page: 1,
+          limit: data.length,
+          total: data.length,
+          totalPages: 1
+        });
+      } else {
+        console.log('⚠️ useProducts: No data returned, using fallback products');
+        setProducts(fallbackProducts);
+        setPagination({
+          page: 1,
+          limit: fallbackProducts.length,
+          total: fallbackProducts.length,
+          totalPages: 1
+        });
+      }
+    } catch (err) {
+      console.error('❌ useProducts: API error, using fallback:', err);
+      setError(err.message);
+      setProducts(fallbackProducts);
+      setPagination({
+        page: 1,
+        limit: fallbackProducts.length,
+        total: fallbackProducts.length,
+        totalPages: 1
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [page, limit, searchTerm, selectedCategory]);
+
   // Define state setters that reset page when params change
   const setPageState = (newPage) => {
     if (page !== newPage) {
@@ -76,91 +145,8 @@ export function useProducts({
       setSelectedCategory(newCategoryId);
     }
   };
-  
-  // Memoize fetchProducts with useCallback to prevent infinite loops
-  const fetchProducts = useCallback(async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Build query parameters
-        const queryParams = new URLSearchParams();
-        if (selectedCategory) queryParams.append('category_id', selectedCategory);
-        if (searchTerm) queryParams.append('search', searchTerm);
-        if (page) queryParams.append('page', page);
-        if (limit) queryParams.append('limit', limit);
-        
-        const queryString = queryParams.toString();
-        const url = `${EFFECTIVE_API_URL}/api/products${queryString ? `?${queryString}` : ''}`;
-        
-        console.log('🔍 Intercepted fetch request to:', url);
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        try {
-          const response = await fetch(url, {
-            signal: controller.signal,
-            headers: {
-              'Accept': 'application/json'
-            }
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error('API error response:', errorText);
-            throw new Error(`HTTP ${response.status}: ${errorText}`);
-          }
-          
-          const data = await response.json();
-          console.log('API response data:', data);
-          
-          if (data && data.products && Array.isArray(data.products)) {
-            // Expected API format with pagination
-            console.log(`Received ${data.products.length} products (paginated format)`);
-            setProducts(data.products);
-            setPagination({
-              page: data.page || page,
-              limit: data.limit || limit,
-              total: data.total || data.products.length,
-              totalPages: data.totalPages || Math.ceil((data.total || data.products.length) / limit)
-            });
-          } else if (Array.isArray(data)) {
-            // Fallback for array format
-            console.log(`Received ${data.length} products (array format)`);
-            setProducts(data);
-            setPagination({
-              page,
-              limit,
-              total: data.length,
-              totalPages: Math.ceil(data.length / limit)
-            });
-          } else {
-            console.error('Unexpected API response format:', data);
-            throw new Error('Invalid API response format');
-          }
-        } catch (fetchErr) {
-          clearTimeout(timeoutId);
-          // Handle different fetch error types
-          if (fetchErr.name === 'AbortError') {
-            throw new Error('Request timed out after 10 seconds');
-          }
-          throw fetchErr;
-        }
-      } catch (err) {
-        console.error('Failed to fetch products:', err);
-        setError(err.message || 'Failed to load products');
-        
-        // Fallback to local products
-        setProducts(localProducts);
-      } finally {
-        setLoading(false);
-      }
-    }, [page, limit, searchTerm, selectedCategory]); // Stable dependencies
 
-    // Fetch data when dependencies change
+  // Fetch data when dependencies change
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]); // Only depend on memoized fetchProducts
@@ -181,21 +167,8 @@ export function useProducts({
   // Add Product function - optimistically update without immediate refetch
   const addProduct = async (productData) => {
     try {
-      const response = await fetch(`${EFFECTIVE_API_URL}/api/products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(productData)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create product');
-      }
-      
-      const newProduct = await response.json();
+      // productsAPI.create returns parsed JSON data, not raw Response
+      const newProduct = await productsAPI.create(productData);
       
       // Optimistically update the products list instead of refetching
       setProducts(prevProducts => [newProduct, ...prevProducts]);
@@ -217,21 +190,8 @@ export function useProducts({
   // Update Product function - optimistically update without immediate refetch  
   const updateProduct = async (productId, productData) => {
     try {
-      const response = await fetch(`${EFFECTIVE_API_URL}/api/products/${productId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(productData)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update product');
-      }
-      
-      const updatedProduct = await response.json();
+      // productsAPI.update returns parsed JSON data, not raw Response
+      const updatedProduct = await productsAPI.update(productId, productData);
       
       // Optimistically update the products list
       setProducts(prevProducts => 
@@ -250,17 +210,8 @@ export function useProducts({
   // Delete Product function - optimistically update without immediate refetch
   const deleteProduct = async (productId) => {
     try {
-      const response = await fetch(`${EFFECTIVE_API_URL}/api/products/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete product');
-      }
+      // productsAPI.delete returns parsed JSON data, not raw Response
+      await productsAPI.delete(productId);
       
       // Optimistically update the products list
       setProducts(prevProducts => 

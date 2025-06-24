@@ -96,6 +96,29 @@ export const productsAPI = {
   // Get a product by ID
   getById: async (id) => {
     return fetchAPI(`/api/products/${id}`);
+  },
+
+  // Create a new product
+  create: async (productData) => {
+    return fetchAPI('/api/products', {
+      method: 'POST',
+      body: JSON.stringify(productData)
+    });
+  },
+
+  // Update an existing product
+  update: async (id, productData) => {
+    return fetchAPI(`/api/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(productData)
+    });
+  },
+
+  // Delete a product (soft delete)
+  delete: async (id) => {
+    return fetchAPI(`/api/products/${id}`, {
+      method: 'DELETE'
+    });
   }
 };
 
