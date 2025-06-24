@@ -16,13 +16,17 @@ export function useStock(lowStockOnly = false) {
 
     try {
       // Use the fixed stockAPI service instead of custom fetch logic
-      const data = await stockAPI.getAll(lowStockOnly);
-      console.log('✅ useStock: API success, received stock items:', data?.length || 0);
+      const response = await stockAPI.getAll(lowStockOnly);
+      console.log('✅ useStock: API success, received response:', response);
       
-      if (data && Array.isArray(data)) {
-        setStock(data);
+      // CRITICAL FIX: Extract stock array from response object
+      const stockData = response?.stock || [];
+      console.log('✅ useStock: Extracted stock items:', stockData?.length || 0);
+      
+      if (stockData && Array.isArray(stockData)) {
+        setStock(stockData);
       } else {
-        console.log('⚠️ useStock: No data returned, setting empty array');
+        console.log('⚠️ useStock: No stock data in response, setting empty array');
         setStock([]);
       }
     } catch (err) {
@@ -79,13 +83,17 @@ export function useStockMovements(productId = null, page = 1, limit = 20) {
 
     try {
       // Use the fixed stockAPI service
-      const data = await stockAPI.getMovements(productId, page, limit);
-      console.log('✅ useStockMovements: API success, received movements:', data?.length || 0);
+      const response = await stockAPI.getMovements(productId, page, limit);
+      console.log('✅ useStockMovements: API success, received response:', response);
       
-      if (data && Array.isArray(data)) {
-        setMovements(data);
+      // CRITICAL FIX: Extract movements array from response object  
+      const movementsData = response?.movements || [];
+      console.log('✅ useStockMovements: Extracted movements:', movementsData?.length || 0);
+      
+      if (movementsData && Array.isArray(movementsData)) {
+        setMovements(movementsData);
       } else {
-        console.log('⚠️ useStockMovements: No data returned, setting empty array');
+        console.log('⚠️ useStockMovements: No movements data in response, setting empty array');
         setMovements([]);
       }
     } catch (err) {

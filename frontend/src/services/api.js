@@ -134,6 +134,31 @@ export const stockAPI = {
   // Get low stock products
   getLowStock: async () => {
     return fetchAPI('/api/stock?low_stock=true');
+  },
+  
+  // Get stock movements history
+  getMovements: async (productId = null, page = 1, limit = 20) => {
+    const params = new URLSearchParams();
+    if (productId) params.append('product_id', productId);
+    params.append('page', page.toString());
+    params.append('limit', limit.toString());
+    
+    return fetchAPI(`/api/stock/movements?${params.toString()}`);
+  },
+  
+  // Add stock (stock masuk)
+  addStock: async (productId, quantity, notes = '') => {
+    return fetchAPI('/api/stock/in', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        quantity: quantity,
+        notes: notes
+      })
+    });
   }
 };
 
