@@ -1,5 +1,5 @@
-// API base URL - update this to match your production URL when deployed
-// Use local development URL when in development mode
+// API base URL - use local development URL only when actually running on localhost
+// Use production backend for all deployed environments (Cloudflare Pages production and preview)
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = isLocalDev 
   ? 'http://localhost:8787' 
@@ -18,7 +18,8 @@ async function fetchAPI(endpoint, options = {}) {
     endpoint,
     isLocalDev,
     hostname: window.location.hostname,
-    fullURL: url
+    port: window.location.port,
+    options
   });
   
   // Add default headers
@@ -34,35 +35,30 @@ async function fetchAPI(endpoint, options = {}) {
   }
 
   try {
-    console.log('🚀 Making fetch request to:', url);
     const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
       ...options,
-      headers
-    });
-
-    console.log('📡 Response received:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      url: response.url
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMsg = errorData.message || `API Error: ${response.status}`;
-      console.error('❌ API Error Response:', errorData);
-      throw new Error(errorMsg);
+      const errorText = await response.text();
+      console.error('❌ API Error Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('✅ API Success:', { url, dataLength: Array.isArray(data) ? data.length : 'object' });
     return data;
   } catch (error) {
-    console.error('💥 API request failed:', {
-      url,
-      error: error.message,
-      stack: error.stack,
-      name: error.name
+    console.error('🚨 FETCH ERROR:', {
+      message: error.message,
+      endpoint
     });
     throw error;
   }
