@@ -305,7 +305,7 @@ products.post('/', async (c) => {
       console.log('Auth check skipped in development mode');
     }
 
-    const { name, category_id, description, image_url, price } = await c.req.json()
+    const { name, category_id, description, image_url, price, barcode } = await c.req.json()
 
     if (!name || !category_id || !price) {
       return c.json({ error: 'Name, category_id, and price are required' }, 400)
@@ -320,10 +320,21 @@ products.post('/', async (c) => {
       return c.json({ error: 'Category not found' }, 400)
     }
 
+    // Check if barcode already exists (if provided)
+    if (barcode) {
+      const existingBarcode = await c.env.DB.prepare(
+        'SELECT id FROM products WHERE barcode = ? AND is_active = 1'
+      ).bind(barcode).first()
+
+      if (existingBarcode) {
+        return c.json({ error: 'Barcode already exists' }, 400)
+      }
+    }
+
     const result = await c.env.DB.prepare(`
-      INSERT INTO products (name, category_id, description, image_url, price, is_active)
-      VALUES (?, ?, ?, ?, ?, 1)
-    `).bind(name, category_id, description || null, image_url || null, price).run()
+      INSERT INTO products (name, category_id, description, image_url, price, barcode, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, 1)
+    `).bind(name, category_id, description || null, image_url || null, price, barcode || null).run()
 
     const productId = result.meta.last_row_id
 
@@ -347,6 +358,8 @@ products.post('/', async (c) => {
 // Update product
 products.put('/:id', async (c) => {
   try {
+    console.log('🔧 PRODUCTS PUT REQUEST - ID:', c.req.param('id'))
+    
     // In development mode, authentication is disabled so payload might not exist
     try {
       const payload = c.get('jwtPayload')
@@ -360,7 +373,14 @@ products.put('/:id', async (c) => {
     }
 
     const id = c.req.param('id')
-    const { name, category_id, description, image_url, price } = await c.req.json()
+    const requestBody = await c.req.json()
+    console.log('🔧 PRODUCTS PUT REQUEST BODY:', JSON.stringify(requestBody, null, 2))
+    
+    const { name, category_id, description, image_url, price, barcode, stock } = requestBody
+    
+    console.log('🔧 EXTRACTED VALUES:', {
+      name, category_id, description, image_url, price, barcode, stock
+    })
 
     // Check if product exists
     const existingProduct = await c.env.DB.prepare(
@@ -382,11 +402,22 @@ products.put('/:id', async (c) => {
       }
     }
 
+    // Check if barcode already exists (if provided and different from current)
+    if (barcode) {
+      const existingBarcode = await c.env.DB.prepare(
+        'SELECT id FROM products WHERE barcode = ? AND id != ? AND is_active = 1'
+      ).bind(barcode, id).first()
+
+      if (existingBarcode) {
+        return c.json({ error: 'Barcode already exists' }, 400)
+      }
+    }
+
     await c.env.DB.prepare(`
       UPDATE products 
-      SET name = ?, category_id = ?, description = ?, image_url = ?, price = ?, updated_at = CURRENT_TIMESTAMP
+      SET name = ?, category_id = ?, description = ?, image_url = ?, price = ?, barcode = ?, stock = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).bind(name ?? null, category_id ?? null, description ?? null, image_url ?? null, price ?? null, id).run()
+    `).bind(name ?? null, category_id ?? null, description ?? null, image_url ?? null, price ?? null, barcode ?? null, stock ?? null, id).run()
 
     return c.json({ message: 'Product updated successfully' })
 
