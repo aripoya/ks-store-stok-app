@@ -1,9 +1,7 @@
-// API base URL - use local development URL only when actually running on localhost
-// Use production backend for all deployed environments (Cloudflare Pages production and preview)
-const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE_URL = isLocalDev 
-  ? 'http://localhost:8787' 
-  : 'https://bakpia-stok-api.wahwooh.workers.dev';
+// API base URL - TEMPORARY: Use production backend for dev due to wrangler proxy issues
+// Use production backend for all environments until local wrangler dev connectivity fixed
+const isLocalDev = false; // Temporarily disabled
+const API_BASE_URL = 'https://bakpia-stok-api.wahwooh.workers.dev'; // Always use production for now
 
 /**
  * Generic API fetch function with error handling
