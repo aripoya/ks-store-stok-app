@@ -81,8 +81,20 @@ export const categoriesAPI = {
  * Products API
  */
 export const productsAPI = {
-  // Get all products
-  getAll: async () => {
+  // Get all products with pagination and filtering
+  getAll: async (params) => {
+    // Construct query string if params are provided
+    if (params && Object.keys(params).length > 0) {
+      const queryParams = new URLSearchParams();
+      
+      if (params.page) queryParams.append('page', params.page);
+      if (params.limit) queryParams.append('limit', params.limit);
+      if (params.search) queryParams.append('search', params.search);
+      if (params.category_id) queryParams.append('category_id', params.category_id);
+      
+      return fetchAPI(`/api/products?${queryParams.toString()}`);
+    }
+    
     return fetchAPI('/api/products');
   },
   
