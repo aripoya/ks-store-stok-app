@@ -16,7 +16,7 @@ import {
   DollarSign,
   Smartphone
 } from 'lucide-react'
-import CDNBarcodeScanner from '../components/CDNBarcodeScanner'
+import KeyboardBarcodeScanner from '../components/KeyboardBarcodeScanner'
 
 const POS = () => {
   // State Management
@@ -24,7 +24,6 @@ const POS = () => {
   const [cart, setCart] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredProducts, setFilteredProducts] = useState([])
-  const [isScanning, setIsScanning] = useState(false)
   const [loading, setLoading] = useState(true)
   const [paymentMethod, setPaymentMethod] = useState('cash')
   const [cashAmount, setCashAmount] = useState('')
@@ -49,7 +48,7 @@ const POS = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:8787/api/products')
+      const response = await fetch('https://bakpia-stok-api.wahwooh.workers.dev/api/products')
       if (!response.ok) throw new Error('Failed to fetch products')
       const data = await response.json()
       setProducts(data.products || data)
@@ -75,8 +74,6 @@ const POS = () => {
       setSearchTerm(barcode)
       toast.warning(`Barcode ${barcode} tidak ditemukan. Coba cari manual.`)
     }
-    
-    setIsScanning(false)
   }
 
   const addToCart = (product) => {
@@ -195,38 +192,17 @@ const POS = () => {
                 Scanner Barcode
               </CardTitle>
               <CardDescription>
-                Scan barcode produk atau masukkan barcode manual
+                Scanner siap menerima input dari barcode scanner Anda.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {!isScanning ? (
-                <Button 
-                  onClick={() => setIsScanning(true)}
-                  className="w-full mb-4"
-                  size="lg"
-                >
-                  <Scan className="mr-2 h-4 w-4" />
-                  Mulai Scan Barcode
-                </Button>
-              ) : (
-                <div className="space-y-4">
-                  <CDNBarcodeScanner 
-                    onBarcodeDetected={handleBarcodeDetected}
-                    onError={(error) => {
-                      console.error('Scanner error:', error)
-                      toast.error('Error scanner: ' + error.message)
-                      setIsScanning(false)
-                    }}
-                  />
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsScanning(false)}
-                    className="w-full"
-                  >
-                    Stop Scanner
-                  </Button>
-                </div>
-              )}
+              <KeyboardBarcodeScanner
+                onScan={handleBarcodeDetected}
+                isActive={true}
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Klik di mana saja pada halaman ini untuk memastikan scanner aktif, lalu mulai scan.
+              </p>
             </CardContent>
           </Card>
 

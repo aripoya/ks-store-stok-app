@@ -20,6 +20,10 @@ import ProductsWorkingMinimal from './pages/ProductsWorkingMinimal'
 import DialogTest from './pages/DialogTest'
 import ProductsWorkingClean from './pages/ProductsWorkingClean'
 import DebugAPI from './pages/DebugAPI' // Import DebugAPI for production debugging
+import BarcodeTest from './pages/BarcodeTest' // Import BarcodeTest page for barcode generator demo
+import BarcodeScannerPage from './pages/BarcodeScannerPage' // Import BarcodeScannerPage for barcode scanning
+import QRCodeTest from './pages/QRCodeTest' // Import QRCodeTest page for QR code generator demo
+import BulkPrint from './pages/BulkPrint' // Import BulkPrint page for bulk barcode/QR code printing
 
 function App() {
   // Mock authentication state - will be replaced with real auth
@@ -45,6 +49,10 @@ function App() {
           <Route path="debug-api" element={<DebugAPI />} />
           <Route path="simple-products" element={<SimpleProducts />} />
           <Route path="pos" element={<POS />} />
+          <Route path="barcode-test" element={<BarcodeTest />} />
+          <Route path="barcode-scanner" element={<BarcodeScannerPage />} />
+          <Route path="qrcode-test" element={<QRCodeTest />} />
+          <Route path="bulk-print" element={<BulkPrint />} />
           <Route path="transactions" element={<div className="p-6"><h1 className="text-2xl font-bold">Transaksi</h1><p className="text-muted-foreground">Coming soon...</p></div>} />
           <Route path="users" element={<div className="p-6"><h1 className="text-2xl font-bold">Manajemen Pengguna</h1><p className="text-muted-foreground">Coming soon...</p></div>} />
           <Route path="reports" element={<div className="p-6"><h1 className="text-2xl font-bold">Laporan</h1><p className="text-muted-foreground">Coming soon...</p></div>} />

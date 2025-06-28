@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Produk Kurniasari</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #e63946;
+            --secondary-color: #457b9d;
+            --background-color: #f1faee;
+            --text-color: #1d3557;
+            --light-accent: #a8dadc;
+            --font-family: 'Poppins', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .product-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        
+        .product-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .product-header .product-id {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        
+        .product-details {
+            padding: 20px;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background-color: var(--light-accent);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .info-item .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+        
+        .info-item .value {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .product-description {
+            margin-bottom: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .action-button {
+            display: block;
+            width: 100%;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .badge-fresh {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .badge-expiring {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .badge-premium {
+            background-color: #9c27b0;
+            color: white;
+        }
+        
+        @media (max-width: 600px) {
+            .product-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .product-price {
+                font-size: 1.3rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="product-card">
+            <div class="product-header">
+                <h1 id="product-name">Bakpia Premium Keju</h1>
+                <div class="product-id">ID: <span id="product-id">P123456</span></div>
+            </div>
+            
+            <img id="product-image" class="product-image" src="https://i.ibb.co/Jq1Ftsw/bakpia-keju.jpg" alt="Bakpia Premium Keju">
+            
+            <div class="product-details">
+                <div class="product-price" id="product-price">Rp 45.000</div>
+                
+                <div>
+                    <span id="badge-premium" class="badge badge-premium">Premium</span>
+                    <span id="badge-fresh" class="badge badge-fresh">Baru</span>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="label">Tanggal Masuk</div>
+                        <div class="value" id="entry-date">25 Juni 2025</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Kadaluarsa</div>
+                        <div class="value" id="expiry-date">25 Agustus 2025</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Lokasi Penjualan</div>
+                        <div class="value" id="sales-location">Outlet Malioboro</div>
+                    </div>
+                </div>
+                
+                <div class="product-description">
+                    <h3>Deskripsi Produk</h3>
+                    <p id="product-description">Bakpia premium dengan isian keju berkualitas tinggi. Nikmat disajikan hangat maupun dingin. Oleh-oleh khas Yogyakarta dengan rasa modern yang memanjakan lidah.</p>
+                </div>
+                
+                <a href="#" class="action-button" id="buy-button">Pesan Sekarang</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            &copy; 2025 Kurniasari Bakpia - Informasi produk ini dihasilkan melalui pemindaian QR Code.
+        </div>
+    </div>
+
+    <script>
+        // Function to get URL parameters
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        
+        // Function to format currency
+        function formatRupiah(angka) {
+            var number_string = angka.toString(),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+                
+            if (ribuan) {
+                separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            return 'Rp ' + rupiah;
+        }
+        
+        // Function to load product data from URL parameters
+        function loadProductData() {
+            // Get data from URL parameters (for dynamic mode)
+            const productId = getParameterByName('id');
+            const name = getParameterByName('name');
+            const price = getParameterByName('price');
+            const image = getParameterByName('image');
+            const entryDate = getParameterByName('entry');
+            const expiryDate = getParameterByName('expiry');
+            const location = getParameterByName('location');
+            const description = getParameterByName('desc');
+            const category = getParameterByName('category');
+            
+            // If product ID exists, try to fetch product data from API
+            if (productId && !name) {
+                // In production, fetch data from your API based on product ID
+                // For now, we'll use demo data
+                fetchProductById(productId);
+            } else if (name) {
+                // If URL parameters are provided, use them
+                updatePageWithData({
+                    id: productId || 'P123456',
+                    name: name,
+                    price: price || 45000,
+                    image: image || 'https://i.ibb.co/Jq1Ftsw/bakpia-keju.jpg',
+                    entryDate: entryDate || '25 Juni 2025',
+                    expiryDate: expiryDate || '25 Agustus 2025',
+                    location: location || 'Outlet Malioboro',
+                    description: description || 'Bakpia premium dengan isian keju berkualitas tinggi.',
+                    category: category || 'Premium'
+                });
+            }
+            // If no parameters, demo data will remain
+        }
+        
+        // Function to fetch product data by ID (simulated for now)
+        function fetchProductById(id) {
+            // In production, this would be an API call
+            // For demonstration, we'll simulate a product lookup
+            
+            // Simulate API delay
+            setTimeout(() => {
+                // Demo product data
+                const demoProduct = {
+                    id: id,
+                    name: 'Bakpia Premium Durian',
+                    price: 50000,
+                    image: 'https://i.ibb.co/qBKbRgc/bakpia-durian.jpg',
+                    entryDate: '20 Juni 2025',
+                    expiryDate: '20 Agustus 2025',
+                    location: 'Outlet Malioboro',
+                    description: 'Bakpia premium dengan isian durian asli. Aroma khas durian yang menggugah selera.',
+                    category: 'Premium'
+                };
+                
+                updatePageWithData(demoProduct);
+            }, 300);
+        }
+        
+        // Function to update the page with product data
+        function updatePageWithData(product) {
+            document.getElementById('product-name').textContent = product.name;
+            document.getElementById('product-id').textContent = product.id;
+            document.getElementById('product-price').textContent = formatRupiah(product.price);
+            document.getElementById('entry-date').textContent = product.entryDate;
+            document.getElementById('expiry-date').textContent = product.expiryDate;
+            document.getElementById('sales-location').textContent = product.location;
+            document.getElementById('product-description').textContent = product.description;
+            
+            // Update image if provided
+            if (product.image) {
+                document.getElementById('product-image').src = product.image;
+                document.getElementById('product-image').alt = product.name;
+            }
+            
+            // Update category badge
+            const premiumBadge = document.getElementById('badge-premium');
+            if (product.category && product.category.toLowerCase() === 'premium') {
+                premiumBadge.style.display = 'inline-block';
+                premiumBadge.textContent = 'Premium';
+            } else if (product.category) {
+                premiumBadge.style.display = 'inline-block';
+                premiumBadge.textContent = product.category;
+            } else {
+                premiumBadge.style.display = 'none';
+            }
+            
+            // Update buy button with product name
+            document.getElementById('buy-button').textContent = `Pesan ${product.name} Sekarang`;
+            
+            // Set page title
+            document.title = `${product.name} - Kurniasari Bakpia`;
+        }
+        
+        // Load data when page loads
+        window.addEventListener('DOMContentLoaded', loadProductData);
+    </script>
+</body>
+</html>

@@ -10,7 +10,9 @@ import {
   Settings,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Scan,
+  QrCode
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -20,6 +22,8 @@ const navigation = [
   { name: 'Produk', href: '/products', icon: Package },
   { name: 'Kategori', href: '/categories', icon: Package },
   { name: 'Stok', href: '/stock', icon: Warehouse },
+  { name: 'Scanner Barcode', href: '/barcode-scanner', icon: Scan },
+  { name: 'Generator Barcode', href: '/barcode-test', icon: QrCode },
   { name: 'Kasir', href: '/pos', icon: ShoppingCart },
   { name: 'Transaksi', href: '/transactions', icon: BarChart3 },
   { name: 'Pengguna', href: '/users', icon: Users },

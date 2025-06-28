@@ -5,6 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import BarcodeGenerator from '@/components/BarcodeGenerator';
+import QRCodeGenerator from '@/components/QRCodeGenerator';
 import {
   Dialog,
   DialogContent,
@@ -32,7 +35,9 @@ import {
   Trash2, 
   Package,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Barcode,
+  QrCode
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { useCategories } from '@/hooks/useCategories';
@@ -407,7 +412,42 @@ export default function ProductsWorking() {
               </select>
             </div>
           </div>
-          <DialogFooter>
+          
+          {/* Barcode and QR Code Tabs */}
+          <div className="mt-6">
+            <Tabs defaultValue="barcode" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="barcode"><Barcode className="h-4 w-4 mr-2" />Barcode</TabsTrigger>
+                <TabsTrigger value="qrcode"><QrCode className="h-4 w-4 mr-2" />QR Code</TabsTrigger>
+              </TabsList>
+              <TabsContent value="barcode" className="border rounded-md p-4 mt-2">
+                <h4 className="text-sm font-medium mb-2">Product Barcode</h4>
+                <p className="text-sm text-gray-500 mb-4">
+                  Generate and customize product barcode. Recommended format: EAN-13 for retail products.
+                </p>
+                <BarcodeGenerator 
+                  value={formData.barcode || ''}
+                  format="EAN13"
+                  onChange={(newValue) => setFormData({ ...formData, barcode: newValue.value })}
+                />
+              </TabsContent>
+              <TabsContent value="qrcode" className="border rounded-md p-4 mt-2">
+                <h4 className="text-sm font-medium mb-2">Product QR Code</h4>
+                <p className="text-sm text-gray-500 mb-4">
+                  Generate QR code for this product. Contains product URL and details.
+                </p>
+                <QRCodeGenerator 
+                  value={`https://kurniasari-bakpia.com/product/new`}
+                  errorCorrection="M"
+                />
+                <div className="text-xs text-gray-500 mt-2">
+                  <p>Note: Final QR code will be available after product creation</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          
+          <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
             <Button onClick={handleAddProduct}>Add Product</Button>
           </DialogFooter>
@@ -497,7 +537,39 @@ export default function ProductsWorking() {
               </select>
             </div>
           </div>
-          <DialogFooter>
+          
+          {/* Barcode and QR Code Tabs */}
+          <div className="mt-6">
+            <Tabs defaultValue="barcode" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="barcode"><Barcode className="h-4 w-4 mr-2" />Barcode</TabsTrigger>
+                <TabsTrigger value="qrcode"><QrCode className="h-4 w-4 mr-2" />QR Code</TabsTrigger>
+              </TabsList>
+              <TabsContent value="barcode" className="border rounded-md p-4 mt-2">
+                <h4 className="text-sm font-medium mb-2">Product Barcode</h4>
+                <p className="text-sm text-gray-500 mb-4">
+                  Generate and customize product barcode. Recommended format: EAN-13 for retail products.
+                </p>
+                <BarcodeGenerator 
+                  value={formData.barcode || ''}
+                  format="EAN13"
+                  onChange={(newValue) => setFormData({ ...formData, barcode: newValue.value })}
+                />
+              </TabsContent>
+              <TabsContent value="qrcode" className="border rounded-md p-4 mt-2">
+                <h4 className="text-sm font-medium mb-2">Product QR Code</h4>
+                <p className="text-sm text-gray-500 mb-4">
+                  Generate QR code for this product. Contains product URL and details.
+                </p>
+                <QRCodeGenerator 
+                  value={`https://kurniasari-bakpia.com/product/${selectedProduct?.id || 'new'}`}
+                  errorCorrection="M"
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+          
+          <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
             <Button onClick={handleEditProduct}>Update Product</Button>
           </DialogFooter>
