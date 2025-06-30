@@ -53,26 +53,26 @@ export function useProducts({
     }
   ];
 
-  // Fetch products using proper API service
+  // Fetch products with pagination and filters
   const fetchProducts = useCallback(async () => {
-    console.log('🔍 useProducts: Starting fetchProducts with proper API service...', {
+    console.log('🔍 DEBUG - fetchProducts called with:', {
       page, limit, searchTerm, selectedCategory
     });
     
     setLoading(true);
     setError(null);
-
+    
     try {
-      // Build query parameters for the API service
-      const params = {
+      console.log('🔍 Making API call to get products...');
+      // Make the API call using consistent method
+      const data = await productsAPI.getAll({
         page,
         limit,
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category_id: selectedCategory })
-      };
-
-      // Use the fixed productsAPI service instead of custom fetch logic
-      const data = await productsAPI.getAll(params);
+      });
+      
+      console.log('✅ API Response:', data);
       console.log('✅ useProducts: API success, received data:', data);
       
       if (data && data.products && Array.isArray(data.products)) {

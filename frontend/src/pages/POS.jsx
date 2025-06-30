@@ -27,6 +27,7 @@ const POS = () => {
   const [loading, setLoading] = useState(true)
   const [paymentMethod, setPaymentMethod] = useState('cash')
   const [cashAmount, setCashAmount] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Load products on component mount
   useEffect(() => {
@@ -48,7 +49,7 @@ const POS = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('https://bakpia-stok-api.wahwooh.workers.dev/api/products')
+      const response = await fetch('http://localhost:8080/api/products')
       if (!response.ok) throw new Error('Failed to fetch products')
       const data = await response.json()
       setProducts(data.products || data)
@@ -129,31 +130,61 @@ const POS = () => {
   const cashAmountNum = parseFloat(cashAmount) || 0
   const change = paymentMethod === 'cash' ? Math.max(0, cashAmountNum - total) : 0
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) {
-      toast.error('Keranjang kosong!')
-      return
+      toast.error('Keranjang kosong!');
+      return;
     }
 
     if (paymentMethod === 'cash' && cashAmountNum < total) {
-      toast.error('Jumlah uang tidak cukup!')
-      return
+      toast.error('Jumlah uang tunai tidak mencukupi!');
+      return;
     }
 
-    // Simulate checkout
-    toast.success('Transaksi berhasil!')
-    console.log('Checkout data:', {
-      items: cart,
-      subtotal,
-      tax,
-      total,
-      paymentMethod,
-      cashAmount: cashAmountNum,
-      change
-    })
-    
-    clearCart()
-  }
+    setIsSubmitting(true);
+    const toastId = toast.loading('Memproses transaksi...');
+
+    const transactionPayload = {
+      items: cart.map(item => ({
+        product_id: item.id,
+        quantity: item.quantity,
+        unit_price: item.price,
+      })),
+      payment_method: paymentMethod,
+      notes: `Pembayaran via ${paymentMethod}`,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // TODO: Add Authorization header when auth is re-enabled
+        },
+        body: JSON.stringify(transactionPayload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Gagal memproses transaksi.');
+      }
+
+      toast.success(`Transaksi berhasil! Kode: ${data.transactionCode}`, {
+        id: toastId,
+      });
+      
+      clearCart();
+
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error(error.message, {
+        id: toastId,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('id-ID', {
@@ -417,9 +448,9 @@ const POS = () => {
                   onClick={handleCheckout}
                   className="w-full" 
                   size="lg"
-                  disabled={paymentMethod === 'cash' && cashAmountNum < total}
+                  disabled={(paymentMethod === 'cash' && cashAmountNum < total) || isSubmitting}
                 >
-                  Selesaikan Transaksi
+                  {isSubmitting ? 'Memproses...' : 'Selesaikan Transaksi'}
                 </Button>
               </CardContent>
             </Card>

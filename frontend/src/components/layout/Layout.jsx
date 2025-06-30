@@ -12,7 +12,8 @@ import {
   X,
   LogOut,
   Scan,
-  QrCode
+  QrCode,
+  ListCollapse
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -24,8 +25,8 @@ const navigation = [
   { name: 'Stok', href: '/stock', icon: Warehouse },
   { name: 'Scanner Barcode', href: '/barcode-scanner', icon: Scan },
   { name: 'Generator Barcode', href: '/barcode-test', icon: QrCode },
-  { name: 'Kasir', href: '/pos', icon: ShoppingCart },
-  { name: 'Transaksi', href: '/transactions', icon: BarChart3 },
+  { name: 'Kasir', href: '/kasir', icon: ShoppingCart },
+  { name: 'Transaksi', href: '/transactions', icon: ListCollapse },
   { name: 'Pengguna', href: '/users', icon: Users },
   { name: 'Laporan', href: '/reports', icon: BarChart3 },
 ]

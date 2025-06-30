@@ -21,7 +21,7 @@ Aplikasi web untuk manajemen stok outlet Bakpia Kurniasari yang dibangun dengan 
 ## 🛠 Tech Stack
 
 ### Frontend
-- **React 19** dengan Vite
+- **React 18** dengan Vite
 - **Tailwind CSS** untuk styling
 - **shadcn/ui** untuk komponen UI
 - **React Router** untuk routing

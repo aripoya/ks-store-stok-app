@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import BarcodeGenerator from '@/components/BarcodeGenerator';
 import QRCodeGenerator from '@/components/QRCodeGenerator';
 import {
@@ -73,7 +74,6 @@ export default function ProductsWorking() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     price: '',
     stock: '',
     category_id: '',
@@ -86,7 +86,6 @@ export default function ProductsWorking() {
       // Prepare data payload to match backend POST endpoint expectations
       const addPayload = {
         name: formData.name,
-        description: formData.description,
         price: formData.price ? parseInt(formData.price) : null,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
         barcode: formData.barcode || null,
@@ -100,7 +99,7 @@ export default function ProductsWorking() {
       await addProduct(addPayload);
       
       setShowAddDialog(false);
-      setFormData({ name: '', description: '', price: '', stock: '', category_id: '', barcode: '' });
+      setFormData({ name: '', price: '', stock: '', category_id: '', barcode: '' });
       
       toast({
         title: "Success",
@@ -122,18 +121,17 @@ export default function ProductsWorking() {
       // Prepare data payload to match backend PUT endpoint expectations
       const updatePayload = {
         name: formData.name,
-        description: formData.description,
         price: formData.price ? parseInt(formData.price) : null,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
         barcode: formData.barcode || null,
         stock: formData.stock ? parseInt(formData.stock) : null,
-        image_url: null // Add image_url field expected by backend
+        image_url: null // API requires this field
       };
       
       await updateProduct(selectedProduct.id, updatePayload);
       setShowEditDialog(false);
       setSelectedProduct(null);
-      setFormData({ name: '', description: '', price: '', stock: '', category_id: '', barcode: '' });
+      setFormData({ name: '', price: '', stock: '', category_id: '', barcode: '' });
       // Refresh products list to show updated product
       await refresh();
       toast({
@@ -180,7 +178,6 @@ export default function ProductsWorking() {
     setSelectedProduct(product);
     setFormData({
       name: product.name || '',
-      description: product.description || '',
       price: product.price ? product.price.toString() : '',
       stock: product.stock ? product.stock.toString() : '',
       category_id: product.category_id ? product.category_id.toString() : '',
@@ -281,7 +278,7 @@ export default function ProductsWorking() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 text-sm mb-2">{product.description}</p>
+
                 <p className="text-lg font-semibold text-green-600">
                   Rp {product.price?.toLocaleString('id-ID') || '0'}
                 </p>
@@ -331,14 +328,14 @@ export default function ProductsWorking() {
 
       {/* Add Product Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-4xl overflow-hidden">
           <DialogHeader>
-            <DialogTitle>Add Product</DialogTitle>
+            <DialogTitle>Add New Product</DialogTitle>
             <DialogDescription>
               Create a new product for your inventory.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="name">Name</Label>
               <Input 
@@ -347,15 +344,6 @@ export default function ProductsWorking() {
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
                 placeholder="Product name"
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea 
-                id="description"
-                value={formData.description} 
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-                placeholder="Product description"
               />
             </div>
             <div>
@@ -414,40 +402,60 @@ export default function ProductsWorking() {
           </div>
           
           {/* Barcode and QR Code Tabs */}
-          <div className="mt-6">
+          <div className="mt-6 col-span-1 md:col-span-2">
             <Tabs defaultValue="barcode" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="barcode"><Barcode className="h-4 w-4 mr-2" />Barcode</TabsTrigger>
                 <TabsTrigger value="qrcode"><QrCode className="h-4 w-4 mr-2" />QR Code</TabsTrigger>
               </TabsList>
               <TabsContent value="barcode" className="border rounded-md p-4 mt-2">
-                <h4 className="text-sm font-medium mb-2">Product Barcode</h4>
-                <p className="text-sm text-gray-500 mb-4">
-                  Generate and customize product barcode. Recommended format: EAN-13 for retail products.
-                </p>
-                <BarcodeGenerator 
-                  value={formData.barcode || ''}
-                  format="EAN13"
-                  onChange={(newValue) => setFormData({ ...formData, barcode: newValue.value })}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Product Barcode</h4>
+                    <p className="text-sm text-gray-500 mb-2">
+                      Generate and customize product barcode. Recommended format: EAN-13 for retail products.
+                    </p>
+                    <Input 
+                      type="text" 
+                      value={formData.barcode || ''}
+                      onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                      placeholder="Enter barcode or generate one"
+                      className="mb-2"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center p-2 bg-white rounded-lg border">
+                    <BarcodeGenerator 
+                      value={formData.barcode || 'SAMPLE'}
+                      format="EAN13"
+                      onChange={(newValue) => setFormData({ ...formData, barcode: newValue.value })}
+                    />
+                  </div>
+                </div>
               </TabsContent>
               <TabsContent value="qrcode" className="border rounded-md p-4 mt-2">
-                <h4 className="text-sm font-medium mb-2">Product QR Code</h4>
-                <p className="text-sm text-gray-500 mb-4">
-                  Generate QR code for this product. Contains product URL and details.
-                </p>
-                <QRCodeGenerator 
-                  value={`https://kurniasari-bakpia.com/product/new`}
-                  errorCorrection="M"
-                />
-                <div className="text-xs text-gray-500 mt-2">
-                  <p>Note: Final QR code will be available after product creation</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Product QR Code</h4>
+                    <p className="text-sm text-gray-500 mb-2">
+                      Generate QR code for this product. Contains product URL and details.
+                    </p>
+                    <div className="text-xs text-gray-500 mt-4">
+                      <p>Note: Final QR code will be available after product creation</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center p-2 bg-white rounded-lg border">
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://kurniasari-bakpia.com/product/${encodeURIComponent(formData.name || 'New Product')}`}
+                      alt="QR Code Produk"
+                      className="border border-gray-200 rounded-md w-32 h-32"
+                    />
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
           </div>
           
-          <DialogFooter className="mt-6">
+          <DialogFooter className="mt-6 justify-end">
             <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
             <Button onClick={handleAddProduct}>Add Product</Button>
           </DialogFooter>
@@ -456,14 +464,14 @@ export default function ProductsWorking() {
 
       {/* Edit Product Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-4xl overflow-hidden">
           <DialogHeader>
             <DialogTitle>Edit Product</DialogTitle>
             <DialogDescription>
               Update the product information.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="edit-name">Name</Label>
               <Input 
@@ -472,15 +480,6 @@ export default function ProductsWorking() {
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
                 placeholder="Product name"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-description">Description</Label>
-              <Textarea 
-                id="edit-description"
-                value={formData.description} 
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-                placeholder="Product description"
               />
             </div>
             <div>
@@ -494,19 +493,15 @@ export default function ProductsWorking() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-stock">Stock</Label>
+              <Label htmlFor="edit-stock">Stock Quantity</Label>
               <Input 
                 id="edit-stock"
-                name="edit-stock"
+                name="stock"
                 type="number" 
                 min="0"
                 step="1"
                 value={formData.stock || ''} 
-                onChange={(e) => {
-                  const value = e.target.value;
-                  console.log('Edit stock input changed:', value);
-                  setFormData({ ...formData, stock: value });
-                }} 
+                onChange={(e) => setFormData({ ...formData, stock: e.target.value })} 
                 placeholder="Stock quantity"
                 className="w-full"
                 autoComplete="off"
@@ -537,45 +532,77 @@ export default function ProductsWorking() {
               </select>
             </div>
           </div>
-          
-          {/* Barcode and QR Code Tabs */}
-          <div className="mt-6">
+
+          {/* Tabs for Barcode and QR Code with improved layout */}
+          <div className="mt-6 border rounded-md">
             <Tabs defaultValue="barcode" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="barcode"><Barcode className="h-4 w-4 mr-2" />Barcode</TabsTrigger>
-                <TabsTrigger value="qrcode"><QrCode className="h-4 w-4 mr-2" />QR Code</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 rounded-t-md">
+                <TabsTrigger value="barcode" className="text-sm font-medium">Barcode</TabsTrigger>
+                <TabsTrigger value="qrcode" className="text-sm font-medium">QR Code</TabsTrigger>
               </TabsList>
-              <TabsContent value="barcode" className="border rounded-md p-4 mt-2">
-                <h4 className="text-sm font-medium mb-2">Product Barcode</h4>
-                <p className="text-sm text-gray-500 mb-4">
-                  Generate and customize product barcode. Recommended format: EAN-13 for retail products.
-                </p>
-                <BarcodeGenerator 
-                  value={formData.barcode || ''}
-                  format="EAN13"
-                  onChange={(newValue) => setFormData({ ...formData, barcode: newValue.value })}
-                />
+              <TabsContent value="barcode" className="p-4 bg-white rounded-lg">
+                <div className="mb-4">
+                  <Label htmlFor="edit-barcode" className="text-sm font-medium">Kode Barcode</Label>
+                  <Input
+                    id="edit-barcode"
+                    className="mt-1"
+                    value={formData.barcode || ''}
+                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                    placeholder="Masukkan kode barcode..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Masukkan kode barcode produk (opsional)</p>
+                </div>
+                
+                {/* Barcode preview */}
+                <div className="bg-slate-50 p-4 rounded-lg text-center border border-gray-200">
+                  <p className="text-sm font-medium text-gray-600 mb-3">Preview Barcode</p>
+                  <div className="flex justify-center mb-3">
+                    <BarcodeGenerator value={formData.barcode || selectedProduct?.id?.toString() || ''} format="CODE128" />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Format CODE128 mendukung angka, huruf, dan simbol</p>
+                  <p className="text-xs text-gray-400">Jika kosong, ID produk akan digunakan</p>
+                </div>
               </TabsContent>
-              <TabsContent value="qrcode" className="border rounded-md p-4 mt-2">
-                <h4 className="text-sm font-medium mb-2">Product QR Code</h4>
-                <p className="text-sm text-gray-500 mb-4">
-                  Generate QR code for this product. Contains product URL and details.
-                </p>
-                <QRCodeGenerator 
-                  value={`https://kurniasari-bakpia.com/product/${selectedProduct?.id || 'new'}`}
-                  errorCorrection="M"
-                />
+              <TabsContent value="qrcode" className="p-4 bg-white rounded-lg">
+                <div className="mb-4">
+                  <p className="text-sm font-medium">QR Code Otomatis</p>
+                  <p className="text-xs text-gray-500 mt-1">QR Code dibuat otomatis berdasarkan ID produk dan URL toko</p>
+                </div>
+                
+                {/* QR Code preview */}
+                <div className="bg-slate-50 p-4 rounded-lg text-center border border-gray-200">
+                  <p className="text-sm font-medium text-gray-600 mb-3">Preview QR Code</p>
+                  <div className="flex justify-center mb-3">
+                    {selectedProduct?.id ? (
+                      <img 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${selectedProduct.id}`}
+                        alt="QR Code Produk"
+                        className="border border-gray-200 rounded-md w-32 h-32"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 bg-white border border-gray-200 flex items-center justify-center">
+                        <span className="text-xs text-gray-500">QR Code akan muncul setelah simpan</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">QR Code dapat digunakan untuk:</p>
+                  <ul className="list-disc pl-5 mt-1 text-xs text-gray-500 text-left">
+                    <li>Pemindaian inventaris cepat</li>
+                    <li>Identifikasi produk</li>
+                    <li>Pengecekan harga</li>
+                  </ul>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
-          
+
           <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleEditProduct}>Update Product</Button>
+            <Button onClick={handleEditProduct} className="bg-green-600 hover:bg-green-700">Update Product</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
+      
       {/* Delete Product Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
