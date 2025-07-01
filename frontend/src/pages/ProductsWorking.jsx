@@ -55,7 +55,7 @@ export default function ProductsWorking() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   
-  const { products, loading, error, pagination, setPage, setSearch, setCategoryId, fetchProducts, addProduct, updateProduct, deleteProduct, refresh } = useProducts({
+  const { products, loading, error, pagination, setPage, setLimit, setSearch, setCategoryId, fetchProducts, addProduct, updateProduct, deleteProduct, refresh } = useProducts({
     search: debouncedSearchTerm,
     categoryId: selectedCategoryId
   });
