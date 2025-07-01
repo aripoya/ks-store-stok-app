@@ -53,11 +53,25 @@ export default function ProductsWorking() {
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   
-  const { products, loading, error, pagination, setPage, setLimit, setSearch, setCategoryId, fetchProducts, addProduct, updateProduct, deleteProduct, refresh } = useProducts({
+  // The selectedCategoryId state is now managed within the useProducts hook.
+  const { 
+    products, 
+    loading, 
+    error, 
+    pagination, 
+    selectedCategory, // Use the state from the hook
+    setPage, 
+    setLimit, 
+    setSearch, 
+    setCategoryId, // Use the setter from the hook
+    fetchProducts, 
+    addProduct, 
+    updateProduct, 
+    deleteProduct, 
+    refresh 
+  } = useProducts({
     search: debouncedSearchTerm,
-    categoryId: selectedCategoryId
   });
 
   useEffect(() => {
@@ -218,18 +232,18 @@ export default function ProductsWorking() {
             </div>
             <div className="flex gap-2 flex-wrap">
               <Button 
-                variant={selectedCategoryId === null ? "default" : "outline"}
+                variant={selectedCategory === null ? "default" : "outline"}
                 size="sm" 
-                onClick={() => setSelectedCategoryId(null)}
+                onClick={() => setCategoryId(null)}
               >
                 All
               </Button>
               {categories?.map((category) => (
                 <Button 
                   key={category.id} 
-                  variant={selectedCategoryId === category.id ? "default" : "outline"}
+                  variant={selectedCategory === category.id ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedCategoryId(category.id)}
+                  onClick={() => setCategoryId(category.id)}
                 >
                   {category.name}
                 </Button>
@@ -325,6 +339,8 @@ export default function ProductsWorking() {
               }}
               className="px-2 py-1 border border-gray-300 rounded-md text-sm"
             >
+              <option value="2">2</option>
+              <option value="3">3</option>
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="20">20</option>
@@ -358,46 +374,65 @@ export default function ProductsWorking() {
             
             {/* Page number buttons */}
             <div className="flex items-center gap-1 mx-1">
-              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                // Show 2 pages before and after current page, adjusting for boundaries
-                let pageNumbers = [];
-                const totalPageButtons = Math.min(5, pagination.totalPages);
-                
-                if (pagination.totalPages <= totalPageButtons) {
-                  // If we have 5 or fewer total pages, show all of them
-                  pageNumbers = Array.from({ length: pagination.totalPages }, (_, i) => i + 1);
-                } else if (pagination.page <= 3) {
-                  // If we're near the start, show first 5 pages
-                  pageNumbers = [1, 2, 3, 4, 5];
-                } else if (pagination.page >= pagination.totalPages - 2) {
-                  // If we're near the end, show last 5 pages
-                  pageNumbers = Array.from(
-                    { length: totalPageButtons }, 
-                    (_, i) => pagination.totalPages - totalPageButtons + i + 1
-                  );
-                } else {
-                  // Otherwise, show 2 before and 2 after current page
-                  pageNumbers = [
-                    pagination.page - 2,
-                    pagination.page - 1,
-                    pagination.page,
-                    pagination.page + 1,
-                    pagination.page + 2
-                  ];
+              {(() => {
+                if (!pagination || pagination.totalPages <= 1) return null;
+
+                const pageNumbers = [];
+                const currentPage = pagination.page;
+                const totalPages = pagination.totalPages;
+                const pageNeighbours = 1; // How many pages to show on each side of the current page
+
+                // Always add the first page
+                pageNumbers.push(1);
+
+                // Add ellipsis if there's a gap after the first page
+                if (currentPage > pageNeighbours + 2) {
+                  pageNumbers.push('...');
+                }
+
+                // Add pages around the current page
+                const startPage = Math.max(2, currentPage - pageNeighbours);
+                const endPage = Math.min(totalPages - 1, currentPage + pageNeighbours);
+
+                for (let i = startPage; i <= endPage; i++) {
+                  pageNumbers.push(i);
+                }
+
+                // Add ellipsis if there's a gap before the last page
+                if (currentPage < totalPages - pageNeighbours - 1) {
+                  pageNumbers.push('...');
+                }
+
+                // Always add the last page
+                if (totalPages > 1) {
+                    pageNumbers.push(totalPages);
                 }
                 
-                return pageNumbers.map(pageNum => (
-                  <Button 
-                    key={pageNum}
-                    variant={pageNum === pagination.page ? "default" : "outline"}
-                    size="sm"
-                    className={pageNum === pagination.page ? "bg-blue-600 hover:bg-blue-700" : ""}
-                    onClick={() => setPage(pageNum)}
-                  >
-                    {pageNum}
-                  </Button>
-                ));
-              })}
+                // Remove duplicates that might occur if totalPages is small
+                const uniquePageNumbers = [...new Set(pageNumbers)];
+
+                return uniquePageNumbers.map((pageNum, index) => {
+                  if (pageNum === '...') {
+                    return (
+                      <span key={`ellipsis-${index}`} className="px-3 py-1 text-sm">
+                        ...
+                      </span>
+                    );
+                  }
+                  
+                  return (
+                    <Button 
+                      key={pageNum}
+                      variant={pageNum === currentPage ? "default" : "outline"}
+                      size="sm"
+                      className={pageNum === currentPage ? "bg-blue-600 hover:bg-blue-700" : ""}
+                      onClick={() => setPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                });
+              })()}
             </div>
             
             {/* Next button */}
