@@ -297,32 +297,130 @@ export default function ProductsWorking() {
         )}
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-6">
-        <p className="text-sm text-gray-500">
-          Showing page {pagination?.page || 1} of {pagination?.totalPages || 1} 
-          ({pagination?.total || 0} total products)
-        </p>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setPage(pagination.page - 1)}
-            disabled={!pagination || pagination.page <= 1}
-          >
-            Previous
-          </Button>
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
-            Page {pagination?.page || 1}
-          </span>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setPage(pagination.page + 1)}
-            disabled={!pagination || pagination.page >= pagination.totalPages}
-          >
-            Next
-          </Button>
+      {/* Enhanced Pagination */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6 border-t pt-6">
+        <div className="flex flex-col items-start">
+          <p className="text-sm text-gray-500">
+            Showing page {pagination?.page || 1} of {pagination?.totalPages || 1} 
+            ({pagination?.total || 0} total products)
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Displaying products {Math.min((pagination.page - 1) * pagination.limit + 1, pagination.total)} - {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+          </p>
+        </div>
+        
+        <div className="flex flex-wrap gap-2 items-center">
+          {/* Page size selector */}
+          <div className="flex items-center gap-2 mr-4">
+            <span className="text-sm text-gray-500">Show:</span>
+            <select 
+              value={pagination.limit} 
+              onChange={(e) => {
+                const newLimit = parseInt(e.target.value);
+                // When changing page size, keep user on current data set as much as possible
+                const currentStartItem = (pagination.page - 1) * pagination.limit + 1;
+                const newPage = Math.max(1, Math.ceil(currentStartItem / newLimit));
+                setLimit(newLimit);
+                setPage(newPage);
+              }}
+              className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          
+          {/* Page navigation */}
+          <div className="flex items-center gap-1">
+            {/* First page button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(1)}
+              disabled={!pagination || pagination.page <= 1}
+            >
+              <span className="sr-only">First Page</span>
+              <span aria-hidden="true">«</span>
+            </Button>
+            
+            {/* Previous button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setPage(pagination.page - 1)}
+              disabled={!pagination || pagination.page <= 1}
+            >
+              Previous
+            </Button>
+            
+            {/* Page number buttons */}
+            <div className="flex items-center gap-1 mx-1">
+              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                // Show 2 pages before and after current page, adjusting for boundaries
+                let pageNumbers = [];
+                const totalPageButtons = Math.min(5, pagination.totalPages);
+                
+                if (pagination.totalPages <= totalPageButtons) {
+                  // If we have 5 or fewer total pages, show all of them
+                  pageNumbers = Array.from({ length: pagination.totalPages }, (_, i) => i + 1);
+                } else if (pagination.page <= 3) {
+                  // If we're near the start, show first 5 pages
+                  pageNumbers = [1, 2, 3, 4, 5];
+                } else if (pagination.page >= pagination.totalPages - 2) {
+                  // If we're near the end, show last 5 pages
+                  pageNumbers = Array.from(
+                    { length: totalPageButtons }, 
+                    (_, i) => pagination.totalPages - totalPageButtons + i + 1
+                  );
+                } else {
+                  // Otherwise, show 2 before and 2 after current page
+                  pageNumbers = [
+                    pagination.page - 2,
+                    pagination.page - 1,
+                    pagination.page,
+                    pagination.page + 1,
+                    pagination.page + 2
+                  ];
+                }
+                
+                return pageNumbers.map(pageNum => (
+                  <Button 
+                    key={pageNum}
+                    variant={pageNum === pagination.page ? "default" : "outline"}
+                    size="sm"
+                    className={pageNum === pagination.page ? "bg-blue-600 hover:bg-blue-700" : ""}
+                    onClick={() => setPage(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                ));
+              })}
+            </div>
+            
+            {/* Next button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setPage(pagination.page + 1)}
+              disabled={!pagination || pagination.page >= pagination.totalPages}
+            >
+              Next
+            </Button>
+            
+            {/* Last page button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(pagination.totalPages)}
+              disabled={!pagination || pagination.page >= pagination.totalPages}
+            >
+              <span className="sr-only">Last Page</span>
+              <span aria-hidden="true">»</span>
+            </Button>
+          </div>
         </div>
       </div>
 

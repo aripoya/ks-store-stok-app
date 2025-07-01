@@ -120,20 +120,34 @@ export function useProducts({
 
   // Define state setters that reset page when params change
   const setPageState = (newPage) => {
+    // Validate page number is in range
+    if (newPage < 1) newPage = 1;
+    if (pagination.totalPages > 0 && newPage > pagination.totalPages) {
+      newPage = pagination.totalPages;
+    }
+    
     if (page !== newPage) {
+      console.log(`🔢 Setting page to ${newPage} (total pages: ${pagination.totalPages})`); 
       setPage(newPage);
     }
   };
   
   const setLimitState = (newLimit) => {
     if (limit !== newLimit) {
-      setPage(1); // Reset to page 1 when changing limit
+      console.log(`📏 Setting limit to ${newLimit} (was ${limit})`); 
+      const currentStartItem = (page - 1) * limit + 1;
+      // Calculate which page the first currently visible item would be on with the new limit
+      // This ensures users don't lose their place when changing page size
+      const newPage = Math.max(1, Math.ceil(currentStartItem / newLimit));
+      
       setLimit(newLimit);
+      setPage(newPage);
     }
   };
   
   const setSearchState = (newSearch) => {
     if (searchTerm !== newSearch) {
+      console.log(`🔍 Setting search to "${newSearch}"`); 
       setPage(1); // Reset to page 1 when changing search
       setSearchTerm(newSearch);
     }
@@ -141,6 +155,7 @@ export function useProducts({
   
   const setCategoryIdState = (newCategoryId) => {
     if (selectedCategory !== newCategoryId) {
+      console.log(`🏷️ Setting category ID to ${newCategoryId}`); 
       setPage(1); // Reset to page 1 when changing category
       setSelectedCategory(newCategoryId);
     }
